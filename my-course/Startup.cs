@@ -24,12 +24,13 @@ namespace MyCourse
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseStaticFiles();
 
             app.Run(async (context) =>
             {
                 // http://localhost:5000?nome=1
                 string nome = context.Request.Query["nome"];
-                await context.Response.WriteAsync($"Hello {nome.ToUpper()}!");
+                await context.Response.WriteAsync($"Hello {nome}!");
             });
         }
     }
