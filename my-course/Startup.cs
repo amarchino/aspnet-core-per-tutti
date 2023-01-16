@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace my_course
+namespace MyCourse
 {
     public class Startup
     {
@@ -27,7 +27,9 @@ namespace my_course
 
             app.Run(async (context) =>
             {
-                await context.Response.WriteAsync("Hello World!");
+                // http://localhost:5000/Products?nome=1
+                string nome = context.Request.Query["nome"];
+                await context.Response.WriteAsync($"Hello {nome}!");
             });
         }
     }
