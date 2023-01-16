@@ -27,9 +27,9 @@ namespace MyCourse
 
             app.Run(async (context) =>
             {
-                // http://localhost:5000/Products?nome=1
+                // http://localhost:5000?nome=1
                 string nome = context.Request.Query["nome"];
-                await context.Response.WriteAsync($"Hello {nome}!");
+                await context.Response.WriteAsync($"Hello {nome.ToUpper()}!");
             });
         }
     }
