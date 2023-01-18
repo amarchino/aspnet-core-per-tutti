@@ -10,6 +10,10 @@ RUN wget --no-verbose https://download.visualstudio.microsoft.com/download/pr/57
     && tar --extract --file=/tmp/dotnet-sdk-2.1.818-linux-x64.tar.gz --directory /usr/share/dotnet \
     && rm /tmp/dotnet-sdk-2.1.818-linux-x64.tar.gz
 
+RUN wget --no-verbose https://download.visualstudio.microsoft.com/download/pr/022d9abf-35f0-4fd5-8d1c-86056df76e89/477f1ebb70f314054129a9f51e9ec8ec/dotnet-sdk-2.2.207-linux-x64.tar.gz --directory-prefix=/tmp \
+    && tar --extract --file=/tmp/dotnet-sdk-2.2.207-linux-x64.tar.gz --directory /usr/share/dotnet \
+    && rm /tmp/dotnet-sdk-2.2.207-linux-x64.tar.gz
+
 # Install other versions of the runtime if necessary
 
 # Set easier configuration
