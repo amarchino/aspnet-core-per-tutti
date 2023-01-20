@@ -1,5 +1,5 @@
 {
-	"name": "Go",
+	"name": "AspNet",
 	"build": {
 		"dockerfile": "Dockerfile",
 		"args": {
@@ -11,7 +11,12 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"EditorConfig.EditorConfig"
+        "ms-dotnettools.csharp",
+        "dbaeumer.vscode-eslint",
+        "Zaczero.bootstrap-v4-snippets",
+				"EditorConfig.EditorConfig",
+        "Janne252.fontawesome-autocomplete",
+        "eamodio.gitlens"
 			]
 		}
 	},
