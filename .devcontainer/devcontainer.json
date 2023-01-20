@@ -16,7 +16,8 @@
         "Zaczero.bootstrap-v4-snippets",
 				"EditorConfig.EditorConfig",
         "Janne252.fontawesome-autocomplete",
-        "eamodio.gitlens"
+        "eamodio.gitlens",
+        "kreativ-software.csharpextensions"
 			]
 		}
 	},
