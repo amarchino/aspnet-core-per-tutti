@@ -6,7 +6,7 @@ using MyCourse.Models.ViewModels;
 
 namespace MyCourse.Models.Services.Application
 {
-  public class CourseService
+  public class CourseService : ICourseService
   {
     public List<CourseViewModel> GetCourses()
     {
@@ -30,7 +30,7 @@ namespace MyCourse.Models.Services.Application
       return courseList;
     }
 
-    internal CourseDetailViewModel GetCourse(int id)
+    public CourseDetailViewModel GetCourse(int id)
     {
       var rand = new Random();
       var price = Convert.ToDecimal(rand.NextDouble() * 10 + 10);
