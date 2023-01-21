@@ -18,7 +18,7 @@ namespace MyCourse.Models.ViewModels
 
         public static CourseViewModel FromDataRow(DataRow courseRow)
         {
-            var courseViewModel = new CourseViewModel {
+            return new CourseViewModel {
                 Id = Convert.ToInt32(courseRow["Id"]),
                 Title = Convert.ToString(courseRow["Title"]),
                 ImagePath = Convert.ToString(courseRow["ImagePath"]),
@@ -33,7 +33,6 @@ namespace MyCourse.Models.ViewModels
                     Convert.ToDecimal(courseRow["CurrentPrice_Amount"])
                 )
             };
-            return courseViewModel;
         }
     }
 }

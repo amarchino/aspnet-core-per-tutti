@@ -17,7 +17,23 @@ namespace MyCourse.Models.Services.Application
         }
         public CourseDetailViewModel GetCourse(int id)
         {
-            throw new NotImplementedException();
+            string query = "SELECT Id, Title, Description, ImagePath, Author, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency FROM Courses WHERE Id=" + id + ";"
+                + "SELECT Id, Title, Description, Duration FROM Lessons WHERE CourseId=" + id;
+            DataSet dataSet = db.Query(query);
+            // Course
+            var courseTable = dataSet.Tables[0];
+            if(courseTable.Rows.Count != 1) {
+                throw new InvalidOperationException($"Did not return exactly 1 row for Course {id}");
+            }
+            var courseDetailViewModel = CourseDetailViewModel.FromDataRow(courseTable.Rows[0]);
+
+            // COurse lessons
+            var lessonDataTable = dataSet.Tables[1];
+            foreach(DataRow lessonRow in lessonDataTable.Rows)
+            {
+                courseDetailViewModel.Lessons.Add(LessonViewModel.fromDataRow(lessonRow));
+            }
+            return courseDetailViewModel;
         }
         public List<CourseViewModel> GetCourses()
         {
