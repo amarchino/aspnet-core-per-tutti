@@ -18,7 +18,7 @@ namespace MyCourse.Models.Services.Application
         var course = new CourseViewModel
         {
           Id = i,
-          Title = $"Corso ${i}",
+          Title = $"Corso {i}",
           CurrentPrice = new Money(Currency.EUR, price),
           FullPrice = new Money(Currency.EUR, rand.NextDouble() > 0.5 ? price : price + 1),
           Author = "Nome cognome",
