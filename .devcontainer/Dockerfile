@@ -16,5 +16,8 @@ RUN wget --no-verbose https://download.visualstudio.microsoft.com/download/pr/02
 
 # Install other versions of the runtime if necessary
 
+RUN sudo apt update \
+  && sudo apt install sqlite3
+
 # Set easier configuration
 RUN chmod 777 /usr/share/dotnet/sdk
