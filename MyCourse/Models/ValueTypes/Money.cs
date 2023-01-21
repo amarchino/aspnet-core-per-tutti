@@ -13,45 +13,46 @@ namespace MyCourse.Models.ValueTypes
         }
         public Money(Currency currency, decimal amount)
         {
-          Amount = amount;
-          Currency = currency;
+            Amount = amount;
+            Currency = currency;
         }
         private decimal amount;
         public decimal Amount
         {
-          get
-          {
-            return amount;
-          }
-          set
-          {
-            if (value < 0) {
-              throw new InvalidOperationException("The amount cannot be negative");
+            get
+            {
+                return amount;
             }
-            amount = value;
-          }
+            set
+            {
+                if (value < 0)
+                {
+                    throw new InvalidOperationException("The amount cannot be negative");
+                }
+                amount = value;
+            }
         }
         public Currency Currency { get; set; }
 
         public override bool Equals(object obj)
         {
-          if (obj == null || GetType() != obj.GetType())
-          {
-            return false;
-          }
-          var money = obj as Money;
-          return Amount == money.Amount
-            && Currency == money.Currency;
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+            var money = obj as Money;
+            return Amount == money.Amount
+              && Currency == money.Currency;
         }
 
         public override int GetHashCode()
         {
-          return HashCode.Combine(Amount, Currency);
+            return HashCode.Combine(Amount, Currency);
         }
 
         public override string ToString()
         {
-          return $"{Currency} {Amount:#.00}";
+            return $"{Currency} {Amount:#.00}";
         }
     }
 }

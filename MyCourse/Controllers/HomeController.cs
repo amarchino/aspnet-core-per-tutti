@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MyCourse.Controllers
 {
-  public class HomeController : Controller
-  {
-    public IActionResult Index()
+    public class HomeController : Controller
     {
-      ViewData["Title"] = "MyCourse";
-      return View();
+        public IActionResult Index()
+        {
+            ViewData["Title"] = "MyCourse";
+            return View();
+        }
     }
-  }
 }

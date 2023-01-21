@@ -8,25 +8,25 @@ using MyCourse.Models.ViewModels;
 
 namespace MyCourse.Controllers
 {
-  public class CoursesController : Controller
-  {
-    private readonly ICourseService courseService;
-    public CoursesController(ICourseService courseService)
+    public class CoursesController : Controller
     {
-      this.courseService = courseService;
-    }
-    public IActionResult Index()
-    {
-      ViewData["Title"] = "Catalogo dei corsi";
-      List<CourseViewModel> courses = courseService.GetCourses();
-      return View(courses);
-    }
+        private readonly ICourseService courseService;
+        public CoursesController(ICourseService courseService)
+        {
+            this.courseService = courseService;
+        }
+        public IActionResult Index()
+        {
+            ViewData["Title"] = "Catalogo dei corsi";
+            List<CourseViewModel> courses = courseService.GetCourses();
+            return View(courses);
+        }
 
-    public IActionResult Detail(int id)
-    {
-      CourseDetailViewModel course = courseService.GetCourse(id);
-      ViewData["Title"] = course.Title;
-      return View(course);
+        public IActionResult Detail(int id)
+        {
+            CourseDetailViewModel course = courseService.GetCourse(id);
+            ViewData["Title"] = course.Title;
+            return View(course);
+        }
     }
-  }
 }
