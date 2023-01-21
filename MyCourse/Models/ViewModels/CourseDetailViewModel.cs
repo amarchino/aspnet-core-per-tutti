@@ -22,7 +22,7 @@ namespace MyCourse.Models.ViewModels
         {
             return new CourseDetailViewModel {
                 Id = Convert.ToInt32(courseRow["Id"]),
-                Description = Convert.ToString(courseRow["Id"]),
+                Description = Convert.ToString(courseRow["Description"]),
                 Title = Convert.ToString(courseRow["Title"]),
                 ImagePath = Convert.ToString(courseRow["ImagePath"]),
                 Author = Convert.ToString(courseRow["Author"]),
