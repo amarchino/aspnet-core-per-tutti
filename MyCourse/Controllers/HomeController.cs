@@ -10,6 +10,7 @@ namespace MyCourse.Controllers
   {
     public IActionResult Index()
     {
+      ViewData["Title"] = "MyCourse";
       return View();
     }
   }
