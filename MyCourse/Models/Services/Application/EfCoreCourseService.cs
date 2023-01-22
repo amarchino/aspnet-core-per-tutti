@@ -17,22 +17,42 @@ namespace MyCourse.Models.Services.Application
             this.dbContext = dbContext;
         }
 
-        public Task<CourseDetailViewModel> GetCourseAsync(int id)
+        public async Task<CourseDetailViewModel> GetCourseAsync(int id)
         {
-            throw new NotImplementedException();
+            CourseDetailViewModel viewModel = await dbContext.Courses
+                .Where(course => course.Id == id)
+                .Select(course => new CourseDetailViewModel{
+                    Id = course.Id,
+                    Title = course.Title,
+                    ImagePath = course.ImagePath,
+                    Author = course.Author,
+                    Rating = course.Rating,
+                    CurrentPrice = course.CurrentPrice,
+                    FullPrice = course.FullPrice,
+                    Description = course.Description,
+                    Lessons = course.Lessons.Select(lesson => new LessonViewModel{
+                        Id = lesson.Id,
+                        Title = lesson.Title,
+                        Description = lesson.Description,
+                        Duration = lesson.Duration
+                    }).ToList<LessonViewModel>()
+                }).SingleAsync<CourseDetailViewModel>();
+
+            return viewModel;
         }
 
         public async Task<List<CourseViewModel>> GetCoursesAsync()
         {
-            List<CourseViewModel> courses = await dbContext.Courses.Select(course => new CourseViewModel{
-                Id = course.Id,
-                Title = course.Title,
-                ImagePath = course.ImagePath,
-                Author = course.Author,
-                Rating = course.Rating,
-                CurrentPrice = course.CurrentPrice,
-                FullPrice = course.FullPrice
-            }).ToListAsync<CourseViewModel>();
+            List<CourseViewModel> courses = await dbContext.Courses
+                .Select(course => new CourseViewModel{
+                    Id = course.Id,
+                    Title = course.Title,
+                    ImagePath = course.ImagePath,
+                    Author = course.Author,
+                    Rating = course.Rating,
+                    CurrentPrice = course.CurrentPrice,
+                    FullPrice = course.FullPrice
+                }).ToListAsync<CourseViewModel>();
             return courses;
         }
     }

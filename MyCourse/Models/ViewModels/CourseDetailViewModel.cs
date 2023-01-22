@@ -10,6 +10,11 @@ namespace MyCourse.Models.ViewModels
 {
     public class CourseDetailViewModel : CourseViewModel
     {
+        public CourseDetailViewModel()
+        {
+            Lessons = new List<LessonViewModel>();
+        }
+
         public string Description { get; set; }
         public List<LessonViewModel> Lessons { get; set; }
 
