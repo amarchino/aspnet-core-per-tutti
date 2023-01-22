@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MyCourse.Models.Options;
 
@@ -12,14 +13,17 @@ namespace MyCourse.Models.Services.Infrastructure
 {
     public class SqliteDatabaseAccessor : IDatabaseAccessor
     {
-        public IOptionsMonitor<ConnectionStringsOptions> ConnectionStringsOptions { get; }
-        public SqliteDatabaseAccessor(IOptionsMonitor<ConnectionStringsOptions> connectionStringsOptions)
+        private readonly IOptionsMonitor<ConnectionStringsOptions> connectionStringsOptions;
+        private readonly ILogger<SqliteDatabaseAccessor> logger;
+        public SqliteDatabaseAccessor(IOptionsMonitor<ConnectionStringsOptions> connectionStringsOptions, ILogger<SqliteDatabaseAccessor> logger)
         {
-            this.ConnectionStringsOptions = connectionStringsOptions;
+            this.logger = logger;
+            this.connectionStringsOptions = connectionStringsOptions;
         }
 
         public async Task<DataSet> QueryAsync(FormattableString formattableQuery)
         {
+            logger.LogDebug(formattableQuery.Format, formattableQuery.GetArguments());
             var queryArguments = formattableQuery.GetArguments();
             var sqliteParameters = new List<SqliteParameter>();
             for(var i = 0; i < queryArguments.Length; i++)
@@ -30,7 +34,7 @@ namespace MyCourse.Models.Services.Infrastructure
             }
             string query = formattableQuery.ToString();
 
-            using (var conn = new SqliteConnection(ConnectionStringsOptions.CurrentValue.Default))
+            using (var conn = new SqliteConnection(connectionStringsOptions.CurrentValue.Default))
             {
                 await conn.OpenAsync();
                 using(var cmd = new SqliteCommand(query, conn))
