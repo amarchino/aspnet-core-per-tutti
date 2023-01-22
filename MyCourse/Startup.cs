@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MyCourse.Models.Options;
 using MyCourse.Models.Services.Application;
 using MyCourse.Models.Services.Infrastructure;
 
@@ -36,6 +37,10 @@ namespace MyCourse
                 string connectionString = configuration["ConnectionStrings:Default"];
                 optionsBuilder.UseSqlite(connectionString);
             });
+
+            // Options
+            services.Configure<ConnectionStringsOptions>(configuration.GetSection("ConnectionStrings"));
+            services.Configure<CoursesOptions>(configuration.GetSection("Courses"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
