@@ -8,25 +8,12 @@ namespace MyCourse.Models.Services.Infrastructure
     public partial class MyCourseDbContext : DbContext
     {
 
-        public MyCourseDbContext()
-        {
-        }
-
         public MyCourseDbContext(DbContextOptions<MyCourseDbContext> options) : base(options)
         {
         }
 
         public virtual DbSet<Course> Courses { get; set; }
         public virtual DbSet<Lesson> Lessons { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if(!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code
-                optionsBuilder.UseSqlite("Data Source=Data/MyCourse.db");
-            }
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
