@@ -32,65 +32,15 @@ namespace MyCourse.Models.Services.Infrastructure
         {
             modelBuilder.Entity<Course>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Author)
-                    .IsRequired()
-                    .HasColumnType("TEXT (100)");
-
-                entity.Property(e => e.CurrentPriceAmount)
-                    .IsRequired()
-                    .HasColumnName("CurrentPrice_Amount")
-                    .HasColumnType("NUMERIC")
-                    .HasDefaultValueSql("0");
-
-                entity.Property(e => e.CurrentPriceCurrency)
-                    .IsRequired()
-                    .HasColumnName("CurrentPrice_Currency")
-                    .HasColumnType("TEXT (3)")
-                    .HasDefaultValueSql("'EUR'");
-
-                entity.Property(e => e.Description).HasColumnType("TEXT (10000)");
-
-                entity.Property(e => e.Email).HasColumnType("TEXT (100)");
-
-                entity.Property(e => e.FullPriceAmount)
-                    .IsRequired()
-                    .HasColumnName("FullPrice_Amount")
-                    .HasColumnType("NUMERIC")
-                    .HasDefaultValueSql("0");
-
-                entity.Property(e => e.FullPriceCurrency)
-                    .IsRequired()
-                    .HasColumnName("FullPrice_Currency")
-                    .HasColumnType("TEXT (3)")
-                    .HasDefaultValueSql("'EUR'");
-
-                entity.Property(e => e.ImagePath).HasColumnType("TEXT (100)");
-
-                entity.Property(e => e.Title)
-                    .IsRequired()
-                    .HasColumnType("TEXT (100)");
-                });
+                entity.ToTable("Courses");
+                entity.HasKey(course => course.Id);
+                // entity.HasKey(course => new { course.Id, course.Author }); // Per chiavi primarie composite
+            });
 
             modelBuilder.Entity<Lesson>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Description).HasColumnType("TEXT (10000)");
-
-                entity.Property(e => e.Duration)
-                    .IsRequired()
-                    .HasColumnType("TEXT (8)")
-                    .HasDefaultValueSql("'00:00:00'");
-
-                entity.Property(e => e.Title)
-                    .IsRequired()
-                    .HasColumnType("TEXT (100)");
-
-                entity.HasOne(d => d.Course)
-                    .WithMany(p => p.Lessons)
-                    .HasForeignKey(d => d.CourseId);
+                entity.ToTable("Lessons");
+                entity.HasKey(lesson => lesson.Id);
             });
         }
     }
