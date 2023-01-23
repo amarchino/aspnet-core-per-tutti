@@ -31,6 +31,7 @@ namespace MyCourse
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddTransient<ICourseService, AdoNetCourseService>();
             // services.AddTransient<ICourseService, EfCoreCourseService>();
+            services.AddTransient<ICachedCourseService, MemoryCacheCourseService>();
             services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
 
             services.AddDbContextPool<MyCourseDbContext>(optionsBuilder => {
