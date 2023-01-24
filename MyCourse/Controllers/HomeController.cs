@@ -8,6 +8,7 @@ namespace MyCourse.Controllers
 {
     public class HomeController : Controller
     {
+        [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Client)]
         public IActionResult Index()
         {
             ViewData["Title"] = "MyCourse";
