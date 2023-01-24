@@ -11,11 +11,11 @@ namespace MyCourse.Controllers
     public class CoursesController : Controller
     {
         private readonly ICourseService courseService;
-        public CoursesController(ICachedCourseService courseService)
+        public CoursesController(ICourseService courseService)
         {
             this.courseService = courseService;
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string search = null, int page = 1, string orderby = "price", bool ascending = true)
         {
             ViewData["Title"] = "Catalogo dei corsi";
             List<CourseViewModel> courses = await courseService.GetCoursesAsync();
