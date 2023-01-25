@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using MyCourse.Models.Exceptions;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Infrastructure;
+using MyCourse.Models.ValueTypes;
 using MyCourse.Models.ViewModels;
 
 namespace MyCourse.Models.Services.Application
@@ -46,14 +47,28 @@ namespace MyCourse.Models.Services.Application
             }
             return courseDetailViewModel;
         }
-        public async Task<List<CourseViewModel>> GetCoursesAsync(string search, int page)
+        public async Task<List<CourseViewModel>> GetCoursesAsync(string search, int page, string orderby, bool ascending)
         {
             page = Math.Max(1, page);
             int limit = coursesOptions.CurrentValue.PerPage;
             int offset = (page - 1) * 10;
+
+            var orderOptions = coursesOptions.CurrentValue.Order;
+            if(!orderOptions.Allow.Contains(orderby))
+            {
+                orderby = orderOptions.By;
+                ascending = orderOptions.Ascending;
+            }
+            if(orderby == "CurrentPrice")
+            {
+                orderby = "CurrentPrice_Amount";
+            }
+            string direction = ascending ? "ASC" : "DESC";
+
             FormattableString query = $@"SELECT Id, Title, ImagePath, Author, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency
                 FROM Courses
                 WHERE UPPER(Title) LIKE UPPER({"%" + search + "%"})
+                ORDER BY {(Sql) orderby} {(Sql) direction}
                 LIMIT {limit}
                 OFFSET {offset}";
             DataSet dataSet = await db.QueryAsync(query);
