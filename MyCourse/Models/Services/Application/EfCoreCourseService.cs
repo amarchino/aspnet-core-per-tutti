@@ -42,10 +42,12 @@ namespace MyCourse.Models.Services.Application
             return viewModel;
         }
 
-        public async Task<List<CourseViewModel>> GetCoursesAsync()
+        public async Task<List<CourseViewModel>> GetCoursesAsync(string search)
         {
+            search = search ?? "";
             IQueryable<CourseViewModel> queryLinq = dbContext.Courses
                 .AsNoTracking()
+                .Where(course => course.Title.Contains(search, StringComparison.InvariantCultureIgnoreCase))
                 .Select(course => new CourseViewModel{
                     Id = course.Id,
                     Title = course.Title,
