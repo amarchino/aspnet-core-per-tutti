@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using MyCourse.Models.InputModels;
 using MyCourse.Models.Services.Application;
 using MyCourse.Models.ViewModels;
 
@@ -15,10 +16,10 @@ namespace MyCourse.Controllers
         {
             this.courseService = courseService;
         }
-        public async Task<IActionResult> Index(string search = null, int page = 1, string orderby = "price", bool ascending = true)
+        public async Task<IActionResult> Index(CourseListInputModel model)
         {
             ViewData["Title"] = "Catalogo dei corsi";
-            List<CourseViewModel> courses = await courseService.GetCoursesAsync(search, page, orderby, ascending);
+            List<CourseViewModel> courses = await courseService.GetCoursesAsync(model);
             return View(courses);
         }
 

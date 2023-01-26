@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MyCourse.Models.Exceptions;
+using MyCourse.Models.InputModels;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Infrastructure;
 using MyCourse.Models.ValueTypes;
@@ -47,30 +48,21 @@ namespace MyCourse.Models.Services.Application
             }
             return courseDetailViewModel;
         }
-        public async Task<List<CourseViewModel>> GetCoursesAsync(string search, int page, string orderby, bool ascending)
+        public async Task<List<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
         {
-            page = Math.Max(1, page);
-            int limit = coursesOptions.CurrentValue.PerPage;
-            int offset = (page - 1) * 10;
-
-            var orderOptions = coursesOptions.CurrentValue.Order;
-            if(!orderOptions.Allow.Contains(orderby))
+            var orderBy = model.OrderBy;
+            if(orderBy == "CurrentPrice")
             {
-                orderby = orderOptions.By;
-                ascending = orderOptions.Ascending;
+                orderBy = "CurrentPrice_Amount";
             }
-            if(orderby == "CurrentPrice")
-            {
-                orderby = "CurrentPrice_Amount";
-            }
-            string direction = ascending ? "ASC" : "DESC";
+            string direction = model.Ascending ? "ASC" : "DESC";
 
             FormattableString query = $@"SELECT Id, Title, ImagePath, Author, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency
                 FROM Courses
-                WHERE UPPER(Title) LIKE UPPER({"%" + search + "%"})
-                ORDER BY {(Sql) orderby} {(Sql) direction}
-                LIMIT {limit}
-                OFFSET {offset}";
+                WHERE UPPER(Title) LIKE UPPER({"%" + model.Search + "%"})
+                ORDER BY {(Sql) orderBy} {(Sql) direction}
+                LIMIT {model.Limit}
+                OFFSET {model.Offset}";
             DataSet dataSet = await db.QueryAsync(query);
             var dataTable = dataSet.Tables[0];
             var courseList = new List<CourseViewModel>();
