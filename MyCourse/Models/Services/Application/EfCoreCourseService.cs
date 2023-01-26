@@ -48,7 +48,7 @@ namespace MyCourse.Models.Services.Application
             return viewModel;
         }
 
-        public async Task<List<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
+        public async Task<ListViewModel<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
         {
             IQueryable<Course> baseQuery = dbContext.Courses;
             switch(model.OrderBy)
@@ -75,11 +75,18 @@ namespace MyCourse.Models.Services.Application
                     Rating = course.Rating,
                     CurrentPrice = course.CurrentPrice,
                     FullPrice = course.FullPrice
-                })
+                });
+            List<CourseViewModel> courses = await queryLinq
                 .Skip(model.Offset)
-                .Take(model.Limit);
-            List<CourseViewModel> courses = await queryLinq.ToListAsync<CourseViewModel>();
-            return courses;
+                .Take(model.Limit)
+                .ToListAsync<CourseViewModel>();
+            int TotalCount = await queryLinq.CountAsync();
+            ListViewModel<CourseViewModel> result = new ListViewModel<CourseViewModel>
+            {
+                Results = courses,
+                TotalCount = TotalCount
+            };
+            return result;
         }
     }
 }

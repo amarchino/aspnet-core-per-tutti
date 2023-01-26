@@ -48,7 +48,7 @@ namespace MyCourse.Models.Services.Application
             }
             return courseDetailViewModel;
         }
-        public async Task<List<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
+        public async Task<ListViewModel<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
         {
             var orderBy = model.OrderBy;
             if(orderBy == "CurrentPrice")
@@ -62,7 +62,11 @@ namespace MyCourse.Models.Services.Application
                 WHERE UPPER(Title) LIKE UPPER({"%" + model.Search + "%"})
                 ORDER BY {(Sql) orderBy} {(Sql) direction}
                 LIMIT {model.Limit}
-                OFFSET {model.Offset}";
+                OFFSET {model.Offset},
+
+                SELECT COUNT(*)
+                FROM Courses
+                WHERE UPPER(Title) LIKE UPPER({"%" + model.Search + "%"})";
             DataSet dataSet = await db.QueryAsync(query);
             var dataTable = dataSet.Tables[0];
             var courseList = new List<CourseViewModel>();
@@ -71,7 +75,12 @@ namespace MyCourse.Models.Services.Application
                 var course = CourseViewModel.FromDataRow(courseRow);
                 courseList.Add(course);
             }
-            return courseList;
+            ListViewModel<CourseViewModel> result = new ListViewModel<CourseViewModel>
+            {
+                Results = courseList,
+                TotalCount = Convert.ToInt32(dataSet.Tables[1].Rows[0][0])
+            };
+            return result;
         }
     }
 }

@@ -32,7 +32,7 @@ namespace MyCourse.Models.InputModels
             Ascending = ascending;
 
             Limit = coursesOptions.PerPage;
-            Offset = (page - 1) * 10;
+            Offset = (page - 1) * coursesOptions.PerPage;
         }
     }
 }
