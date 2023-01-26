@@ -20,7 +20,13 @@ namespace MyCourse.Controllers
         {
             ViewData["Title"] = "Catalogo dei corsi";
             List<CourseViewModel> courses = await courseService.GetCoursesAsync(model);
-            return View(courses);
+
+            CourseListViewModel viewModel = new CourseListViewModel
+            {
+                Courses = courses,
+                Input = model
+            };
+            return View(viewModel);
         }
 
         public async Task<IActionResult> Detail(int id)
