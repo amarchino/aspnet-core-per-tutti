@@ -53,6 +53,9 @@ namespace MyCourse.Models.Services.Application
             IQueryable<Course> baseQuery = dbContext.Courses;
             switch(model.OrderBy)
             {
+                case "Id":
+                    baseQuery = model.Ascending ? baseQuery.OrderBy(course => course.Id) : baseQuery.OrderByDescending(course => course.Id);
+                    break;
                 case "Title":
                     baseQuery = model.Ascending ? baseQuery.OrderBy(course => course.Title) : baseQuery.OrderByDescending(course => course.Title);
                     break;
@@ -87,6 +90,30 @@ namespace MyCourse.Models.Services.Application
                 TotalCount = TotalCount
             };
             return result;
+        }
+
+        public async Task<List<CourseViewModel>> getBestRatingCoursesAsync()
+        {
+            return (await GetCoursesAsync(new CourseListInputModel(
+                search: "",
+                page: 1,
+                orderby: "Rating",
+                ascending: false,
+                limit: coursesOptions.CurrentValue.InHome,
+                orderOptions: coursesOptions.CurrentValue.Order
+            ))).Results;
+        }
+
+        public async Task<List<CourseViewModel>> getMostRecentCoursesAsync()
+        {
+            return (await GetCoursesAsync(new CourseListInputModel(
+                search: "",
+                page: 1,
+                orderby: "Id",
+                ascending: false,
+                limit: coursesOptions.CurrentValue.InHome,
+                orderOptions: coursesOptions.CurrentValue.Order
+            ))).Results;
         }
     }
 }

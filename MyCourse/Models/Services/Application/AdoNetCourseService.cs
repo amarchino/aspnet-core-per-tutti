@@ -82,5 +82,29 @@ namespace MyCourse.Models.Services.Application
             };
             return result;
         }
+
+        public async Task<List<CourseViewModel>> getBestRatingCoursesAsync()
+        {
+            return (await GetCoursesAsync(new CourseListInputModel(
+                search: "",
+                page: 1,
+                orderby: "Rating",
+                ascending: false,
+                limit: coursesOptions.CurrentValue.InHome,
+                orderOptions: coursesOptions.CurrentValue.Order
+            ))).Results;
+        }
+
+        public async Task<List<CourseViewModel>> getMostRecentCoursesAsync()
+        {
+            return (await GetCoursesAsync(new CourseListInputModel(
+                search: "",
+                page: 1,
+                orderby: "Id",
+                ascending: false,
+                limit: coursesOptions.CurrentValue.InHome,
+                orderOptions: coursesOptions.CurrentValue.Order
+            ))).Results;
+        }
     }
 }

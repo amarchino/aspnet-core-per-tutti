@@ -29,11 +29,11 @@ namespace MyCourse
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            // services.AddResponseCaching();
+            services.AddResponseCaching();
             services.AddMvc(options => {
-                // CacheProfile homeProfile = new CacheProfile();
-                // configuration.Bind("ResponseCache:Home", homeProfile);
-                // options.CacheProfiles.Add("Home", homeProfile);
+                CacheProfile homeProfile = new CacheProfile();
+                configuration.Bind("ResponseCache:Home", homeProfile);
+                options.CacheProfiles.Add("Home", homeProfile);
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             // services.AddTransient<ICourseService, AdoNetCourseService>();
             services.AddTransient<ICourseService, EfCoreCourseService>();
@@ -64,7 +64,7 @@ namespace MyCourse
                 app.UseExceptionHandler("/Error");
             }
             app.UseStaticFiles();
-            // app.UseResponseCaching();
+            app.UseResponseCaching();
             // app.UseMvcWithDefaultRoute();
             app.UseMvc(routeBuilder =>
             {

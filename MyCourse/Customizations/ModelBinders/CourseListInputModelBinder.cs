@@ -26,7 +26,7 @@ namespace MyCourse.Customizations.ModelBinders
             bool ascending = Convert.ToBoolean(bindingContext.ValueProvider.GetValue("Ascending").FirstValue);
 
             // Creiamo l'istanza del CourseListInputModel
-            var inputModel = new CourseListInputModel(search, page, orderBy, ascending, coursesOptions.CurrentValue);
+            var inputModel = new CourseListInputModel(search, page, orderBy, ascending, coursesOptions.CurrentValue.PerPage, coursesOptions.CurrentValue.Order);
 
             // Impostiamo il risultato per notificare che la creazione è avvenuta con successo
             bindingContext.Result = ModelBindingResult.Success(inputModel);

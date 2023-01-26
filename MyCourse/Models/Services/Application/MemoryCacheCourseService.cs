@@ -48,5 +48,23 @@ namespace MyCourse.Models.Services.Application
             // Altrimenti uso il servizio applicativo sosttostante, che recupererò sempre i valori dal database
             return courseService.GetCoursesAsync(model);
         }
+
+        public Task<List<CourseViewModel>> getBestRatingCoursesAsync()
+        {
+            return memoryCache.GetOrCreateAsync($"BestRatingCourses", cacheEntry => {
+                cacheEntry.SetSize(1);
+                cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(coursesOptions.CurrentValue.CacheDuration));
+                return courseService.getBestRatingCoursesAsync();
+            });
+        }
+
+        public Task<List<CourseViewModel>> getMostRecentCoursesAsync()
+        {
+            return memoryCache.GetOrCreateAsync($"MostRecentCourses", cacheEntry => {
+                cacheEntry.SetSize(1);
+                cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(coursesOptions.CurrentValue.CacheDuration));
+                return courseService.getMostRecentCoursesAsync();
+            });
+        }
     }
 }
