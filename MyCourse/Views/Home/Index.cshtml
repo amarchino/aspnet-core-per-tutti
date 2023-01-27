@@ -64,28 +64,10 @@
     <author>di @course.Author</author>
   </div>
   <div class="col-md-2 rating">
-    @for(int i = 1; i <= 5; i++)
-    {
-      if(course.Rating >= i)
-      {
-        <i class="fas fa-star"></i>
-      }
-      else if(course.Rating > i -1)
-      {
-        <i class="fas fa-star-half-alt"></i>
-      }
-      else
-      {
-        <i class="far fa-star"></i>
-      }
-    }
+    <rating value="@course.Rating" />
   </div>
   <div class="col-md-2 price">
-    @course.CurrentPrice
-    @if(!course.CurrentPrice.Equals(course.FullPrice))
-    {
-      <br/><s>@course.FullPrice</s>
-    }
+    <price current-price="@course.CurrentPrice" full-price="@course.FullPrice" />
   </div>
   <div class="col-md-2 d-flex align-items-center">
     <a class="btn btn-outline-primary" asp-action="Detail" asp-controller="Courses" asp-route-id="@course.Id">Dettaglio</a>
