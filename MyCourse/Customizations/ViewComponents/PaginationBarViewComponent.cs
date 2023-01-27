@@ -10,7 +10,7 @@ namespace MyCourse.Customizations.ViewComponents
     [ViewComponent(Name = "PaginationBar")]
     public class PaginationBarViewComponent : ViewComponent
     {
-        public IViewComponentResult Invoke(CourseListViewModel model)
+        public IViewComponentResult Invoke(IPaginationInfo model)
         {
             return View(model);
         }
