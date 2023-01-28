@@ -14,10 +14,16 @@ RUN wget --no-verbose https://download.visualstudio.microsoft.com/download/pr/02
     && tar --extract --file=/tmp/dotnet-sdk-2.2.207-linux-x64.tar.gz --directory /usr/share/dotnet \
     && rm /tmp/dotnet-sdk-2.2.207-linux-x64.tar.gz
 
+RUN wget --no-verbose https://download.visualstudio.microsoft.com/download/pr/43f3a3bd-3df2-41e6-beca-3ec4952ca6c4/30fe7779249607d1bb3bb4b20d61a479/dotnet-sdk-3.0.103-linux-x64.tar.gz --directory-prefix=/tmp \
+    && tar --extract --file=/tmp/dotnet-sdk-3.0.103-linux-x64.tar.gz --directory /usr/share/dotnet \
+    && rm /tmp/dotnet-sdk-3.0.103-linux-x64.tar.gz
+
 # Install other versions of the runtime if necessary
 
-RUN sudo apt update \
-  && sudo apt install sqlite3
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg -o /usr/share/keyrings/yarn-keyring.asc \
+  && sed -i '1s;^deb.*$;deb [arch=amd64 signed-by=/usr/share/keyrings/yarn-keyring.asc] https://dl.yarnpkg.com/debian/ stable main;' /etc/apt/sources.list.d/yarn.list \
+  && apt update \
+  && apt install sqlite3
 
 # Set easier configuration
 RUN chmod 777 /usr/share/dotnet/sdk

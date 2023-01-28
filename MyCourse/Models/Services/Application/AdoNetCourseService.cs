@@ -62,7 +62,7 @@ namespace MyCourse.Models.Services.Application
                 WHERE UPPER(Title) LIKE UPPER({"%" + model.Search + "%"})
                 ORDER BY {(Sql) orderBy} {(Sql) direction}
                 LIMIT {model.Limit}
-                OFFSET {model.Offset},
+                OFFSET {model.Offset};
 
                 SELECT COUNT(*)
                 FROM Courses

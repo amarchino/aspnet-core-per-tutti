@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Application;
 using MyCourse.Models.Services.Infrastructure;
@@ -34,9 +29,9 @@ namespace MyCourse
                 CacheProfile homeProfile = new CacheProfile();
                 configuration.Bind("ResponseCache:Home", homeProfile);
                 options.CacheProfiles.Add("Home", homeProfile);
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            // services.AddTransient<ICourseService, AdoNetCourseService>();
-            services.AddTransient<ICourseService, EfCoreCourseService>();
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddTransient<ICourseService, AdoNetCourseService>();
+            // services.AddTransient<ICourseService, EfCoreCourseService>();
             services.AddTransient<ICachedCourseService, MemoryCacheCourseService>();
             services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
 
@@ -53,9 +48,9 @@ namespace MyCourse
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            if (env.IsEnvironment("Development"))
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -64,11 +59,13 @@ namespace MyCourse
                 app.UseExceptionHandler("/Error");
             }
             app.UseStaticFiles();
+            // Endpoint Routing middleware
+            app.UseRouting();
             app.UseResponseCaching();
-            // app.UseMvcWithDefaultRoute();
-            app.UseMvc(routeBuilder =>
-            {
-                routeBuilder.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
+
+            // Endpoint middleware
+            app.UseEndpoints(routeBuilder => {
+                routeBuilder.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }
