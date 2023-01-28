@@ -69,7 +69,7 @@ namespace MyCourse.Models.Services.Application
 
             IQueryable<CourseViewModel> queryLinq = baseQuery
                 .AsNoTracking()
-                .Where(course => course.Title.Contains(model.Search, StringComparison.InvariantCultureIgnoreCase))
+                .Where(course => course.Title.ToUpper().Contains(model.Search.ToUpper()))
                 .Select(course => new CourseViewModel{
                     Id = course.Id,
                     Title = course.Title,
@@ -78,7 +78,8 @@ namespace MyCourse.Models.Services.Application
                     Rating = course.Rating,
                     CurrentPrice = course.CurrentPrice,
                     FullPrice = course.FullPrice
-                });
+                })
+                ;
             List<CourseViewModel> courses = await queryLinq
                 .Skip(model.Offset)
                 .Take(model.Limit)

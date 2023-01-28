@@ -28,7 +28,9 @@ namespace MyCourse.Models.Services.Infrastructure
                         .Property(money => money.Currency)
                         .HasConversion<string>()
                         .HasColumnName("CurrentPrice_Currency");
-                    builder.Property(money => money.Amount).HasColumnName("CurrentPrice_Amount");
+                    builder.Property(money => money.Amount)
+                        .HasConversion<float>()
+                        .HasColumnName("CurrentPrice_Amount");
                 });
                 entity.OwnsOne(course => course.FullPrice, builder => {
                     builder.Property(money => money.Currency).HasConversion<string>();
