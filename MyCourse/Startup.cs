@@ -35,8 +35,8 @@ namespace MyCourse
             .AddRazorRuntimeCompilation()
             #endif
             ;
-            // services.AddTransient<ICourseService, AdoNetCourseService>();
-            services.AddTransient<ICourseService, EfCoreCourseService>();
+            services.AddTransient<ICourseService, AdoNetCourseService>();
+            // services.AddTransient<ICourseService, EfCoreCourseService>();
             services.AddTransient<ICachedCourseService, MemoryCacheCourseService>();
             services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
 

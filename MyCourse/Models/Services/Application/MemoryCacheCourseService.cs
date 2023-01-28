@@ -66,5 +66,10 @@ namespace MyCourse.Models.Services.Application
                 return courseService.getMostRecentCoursesAsync();
             });
         }
+
+        public Task<CourseDetailViewModel> CreateCourseAsync(CourseCreateInputModel inputModel)
+        {
+            return courseService.CreateCourseAsync(inputModel);
+        }
     }
 }

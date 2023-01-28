@@ -116,5 +116,10 @@ namespace MyCourse.Models.Services.Application
                 orderOptions: coursesOptions.CurrentValue.Order
             ))).Results;
         }
+
+        public Task<CourseDetailViewModel> CreateCourseAsync(CourseCreateInputModel inputModel)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
