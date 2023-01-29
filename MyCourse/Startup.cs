@@ -37,7 +37,7 @@ namespace MyCourse
             #endif
             ;
 
-            var persistence = Persistence.AdoNet;
+            var persistence = Persistence.EfCore;
             switch(persistence)
             {
                 case Persistence.AdoNet:
