@@ -1,4 +1,5 @@
 ﻿
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -35,16 +36,23 @@ namespace MyCourse
             .AddRazorRuntimeCompilation()
             #endif
             ;
-            // services.AddTransient<ICourseService, AdoNetCourseService>();
-            services.AddTransient<ICourseService, EfCoreCourseService>();
-            services.AddTransient<ICachedCourseService, MemoryCacheCourseService>();
-            services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
 
-            services.AddDbContextPool<MyCourseDbContext>(optionsBuilder => {
-                // string connectionString = configuration.GetSection("ConnectionStrings").GetValue<string>("Default");
-                string connectionString = configuration["ConnectionStrings:Default"];
-                optionsBuilder.UseSqlite(connectionString);
-            });
+            var persistence = Persistence.AdoNet;
+            switch(persistence)
+            {
+                case Persistence.AdoNet:
+                    services.AddTransient<ICourseService, AdoNetCourseService>();
+                    services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
+                    break;
+                case Persistence.EfCore:
+                    services.AddTransient<ICourseService, EfCoreCourseService>();
+                    services.AddDbContextPool<MyCourseDbContext>(optionsBuilder => {
+                        string connectionString = configuration["ConnectionStrings:Default"];
+                        optionsBuilder.UseSqlite(connectionString);
+                    });
+                    break;
+            }
+            services.AddTransient<ICachedCourseService, MemoryCacheCourseService>();
 
             // Options
             services.Configure<ConnectionStringsOptions>(configuration.GetSection("ConnectionStrings"));
