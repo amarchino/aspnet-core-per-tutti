@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using MyCourse.Models.Entities;
 using MyCourse.Models.Enums;
 using MyCourse.Models.ValueTypes;
 
@@ -40,6 +41,21 @@ namespace MyCourse.Models.ViewModels
                     Enum.Parse<Currency>(Convert.ToString(courseRow["CurrentPrice_Currency"])),
                     Convert.ToDecimal(courseRow["CurrentPrice_Amount"])
                 ),
+                Lessons = new List<LessonViewModel>()
+            };
+        }
+
+        internal static CourseDetailViewModel FromEntity(Course course)
+        {
+            return new CourseDetailViewModel {
+                Id = course.Id,
+                Description = course.Description,
+                Title = course.Title,
+                ImagePath = course.ImagePath,
+                Author = course.Author,
+                Rating = course.Rating,
+                FullPrice = course.FullPrice,
+                CurrentPrice = course.CurrentPrice,
                 Lessons = new List<LessonViewModel>()
             };
         }

@@ -19,6 +19,7 @@ namespace MyCourse.Models.Entities
             }
             Title = title;
             Author = author;
+            ImagePath = "/Courses/default.png";
             Lessons = new HashSet<Lesson>();
         }
 

@@ -117,9 +117,13 @@ namespace MyCourse.Models.Services.Application
             ))).Results;
         }
 
-        public Task<CourseDetailViewModel> CreateCourseAsync(CourseCreateInputModel inputModel)
+        public async Task<CourseDetailViewModel> CreateCourseAsync(CourseCreateInputModel inputModel)
         {
-            throw new NotImplementedException();
+            var entity = new Course(inputModel.Title, "Mario Rossi");
+            dbContext.Courses.Add(entity);
+            await dbContext.SaveChangesAsync();
+
+            return CourseDetailViewModel.FromEntity(entity);
         }
     }
 }
