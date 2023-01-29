@@ -76,5 +76,15 @@ namespace MyCourse.Models.Services.Application
         {
             return courseService.IsTitleAvailableAsync(title);
         }
+
+        public Task<CourseEditInputModel> GetCourseForEditingAsync(int id)
+        {
+            return courseService.GetCourseForEditingAsync(id);
+        }
+
+        public Task<CourseDetailViewModel> EditCourseAsync(CourseEditInputModel inputModel)
+        {
+            return courseService.EditCourseAsync(inputModel);
+        }
     }
 }

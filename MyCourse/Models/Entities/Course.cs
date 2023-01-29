@@ -61,6 +61,24 @@ namespace MyCourse.Models.Entities
             FullPrice = newFullPrice;
             CurrentPrice = newDiscountPrice;
         }
+
+        internal void changeDescription(string newDescription)
+        {
+            if(string.IsNullOrEmpty(newDescription))
+            {
+                throw new ArgumentException("Desciption can't be empty");
+            }
+            Description = newDescription;
+        }
+
+        internal void changeEmail(string newEmail)
+        {
+            if(string.IsNullOrEmpty(newEmail))
+            {
+                throw new ArgumentException("Email can't be empty");
+            }
+            Email = newEmail;
+        }
     }
 }
 

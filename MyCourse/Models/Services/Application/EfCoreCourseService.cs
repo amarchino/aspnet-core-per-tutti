@@ -142,5 +142,44 @@ namespace MyCourse.Models.Services.Application
                 .AnyAsync(course => EF.Functions.Like(course.Title, title));
             return !titleExists;
         }
+
+        public async Task<CourseEditInputModel> GetCourseForEditingAsync(int id)
+        {
+            CourseEditInputModel viewModel = await dbContext.Courses
+                .AsNoTracking()
+                .Where(course => course.Id == id)
+                .Select(course => new CourseEditInputModel{
+                    Id = course.Id,
+                    Title = course.Title,
+                    Description = course.Description,
+                    ImagePath = course.ImagePath,
+                    Email = course.Email,
+                    FullPrice = course.FullPrice,
+                    CurrentPrice = course.CurrentPrice,
+                }).SingleAsync<CourseEditInputModel>();
+
+            return viewModel;
+        }
+
+        public async Task<CourseDetailViewModel> EditCourseAsync(CourseEditInputModel inputModel)
+        {
+            Course course = await dbContext.Courses.FindAsync(inputModel.Id);
+            course.ChangeTitle(inputModel.Title);
+            course.ChangePrices(inputModel.FullPrice, inputModel.CurrentPrice);
+            course.changeDescription(inputModel.Description);
+            course.changeEmail(inputModel.Email);
+            // dbContext.Courses.Update(entity);
+
+            try
+            {
+                await dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateException exc) when ((exc.InnerException as SqliteException)?.SqliteErrorCode == 19)
+            {
+                throw new CourseTitleUnavailableException(inputModel.Title, exc);
+            }
+
+            return CourseDetailViewModel.FromEntity(course);
+        }
     }
 }
