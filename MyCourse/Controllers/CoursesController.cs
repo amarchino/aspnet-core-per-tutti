@@ -48,6 +48,7 @@ namespace MyCourse.Controllers
         {
             if(!ModelState.IsValid)
             {
+                ViewData["Title"] = "Nuovo corso";
                 return View(inputModel);
             }
 
