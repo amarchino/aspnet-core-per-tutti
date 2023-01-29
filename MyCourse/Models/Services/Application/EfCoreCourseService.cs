@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MyCourse.Models.Entities;
+using MyCourse.Models.Exceptions;
 using MyCourse.Models.InputModels;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Infrastructure;
@@ -121,7 +123,15 @@ namespace MyCourse.Models.Services.Application
         {
             var entity = new Course(inputModel.Title, "Mario Rossi");
             dbContext.Courses.Add(entity);
-            await dbContext.SaveChangesAsync();
+
+            try
+            {
+                await dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateException exc) when ((exc.InnerException as SqliteException)?.SqliteErrorCode == 19)
+            {
+                throw new CourseTitleUnavailableException(inputModel.Title, exc);
+            }
 
             return CourseDetailViewModel.FromEntity(entity);
         }
