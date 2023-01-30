@@ -13,7 +13,7 @@ namespace MyCourse.Controllers
     public class CoursesController : Controller
     {
         private readonly ICourseService courseService;
-        public CoursesController(ICourseService courseService)
+        public CoursesController(ICachedCourseService courseService)
         {
             this.courseService = courseService;
         }
@@ -52,7 +52,8 @@ namespace MyCourse.Controllers
                 try
                 {
                     CourseDetailViewModel course = await courseService.CreateCourseAsync(inputModel);
-                    return RedirectToAction(nameof(Index));
+                    TempData["ConfirmationMessage"] = "Ok! Il tuo corso è stato creato, ora perché non inserisci anche gli altri dati?";
+                    return RedirectToAction(nameof(Edit), new { id = course.Id });
                 }
                 catch (CourseTitleUnavailableException)
                 {
@@ -64,9 +65,9 @@ namespace MyCourse.Controllers
             return View(inputModel);
         }
 
-        public async Task<IActionResult> IsTitleAvailable(string title)
+        public async Task<IActionResult> IsTitleAvailable(string title, int id = 0)
         {
-            bool result = await courseService.IsTitleAvailableAsync(title);
+            bool result = await courseService.IsTitleAvailableAsync(title, id);
             return Json(result);
         }
 
@@ -85,7 +86,8 @@ namespace MyCourse.Controllers
                 try
                 {
                     CourseDetailViewModel course = await courseService.EditCourseAsync(inputModel);
-                    return RedirectToAction(nameof(Index));
+                    TempData["ConfirmationMessage"] = "I dati sono stati salvati con successo";
+                    return RedirectToAction(nameof(Detail), new { id = inputModel.Id });
                 }
                 catch(CourseTitleUnavailableException)
                 {

@@ -136,9 +136,10 @@ namespace MyCourse.Models.Services.Application
             return CourseDetailViewModel.FromEntity(entity);
         }
 
-        public async Task<bool> IsTitleAvailableAsync(string title)
+        public async Task<bool> IsTitleAvailableAsync(string title, int id)
         {
             bool titleExists = await dbContext.Courses
+                .Where(course => course.Id != id)
                 .AnyAsync(course => EF.Functions.Like(course.Title, title));
             return !titleExists;
         }
