@@ -21,6 +21,7 @@
             //     "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
             // },
             "env": {
+              "LANG": "it_IT.UTF-8"
             },
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"

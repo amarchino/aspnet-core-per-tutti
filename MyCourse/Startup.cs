@@ -1,12 +1,15 @@
 ﻿
 using System;
+using System.Globalization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MyCourse.Customizations.ModelBinders;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Application;
 using MyCourse.Models.Services.Infrastructure;
@@ -30,6 +33,8 @@ namespace MyCourse
                 CacheProfile homeProfile = new CacheProfile();
                 configuration.Bind("ResponseCache:Home", homeProfile);
                 options.CacheProfiles.Add("Home", homeProfile);
+
+                options.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
             })
             .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
             #if DEBUG
