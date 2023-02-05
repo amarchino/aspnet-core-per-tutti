@@ -11,13 +11,14 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-        "ms-dotnettools.csharp",
-        "dbaeumer.vscode-eslint",
-        "Zaczero.bootstrap-v4-snippets",
+				"ms-dotnettools.csharp",
+				"dbaeumer.vscode-eslint",
+				"Zaczero.bootstrap-v4-snippets",
 				"EditorConfig.EditorConfig",
-        "Janne252.fontawesome-autocomplete",
-        "eamodio.gitlens",
-        "kreativ-software.csharpextensions"
+				"Janne252.fontawesome-autocomplete",
+				"eamodio.gitlens",
+				"kreativ-software.csharpextensions",
+				"alexcvzz.vscode-sqlite"
 			]
 		}
 	},
