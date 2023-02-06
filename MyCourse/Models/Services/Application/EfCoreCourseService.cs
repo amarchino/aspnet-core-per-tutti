@@ -18,11 +18,13 @@ namespace MyCourse.Models.Services.Application
     {
         private readonly MyCourseDbContext dbContext;
         private readonly IOptionsMonitor<CoursesOptions> coursesOptions;
+        private readonly IImagePersister imagePersister;
 
-        public EfCoreCourseService(MyCourseDbContext dbContext, IOptionsMonitor<CoursesOptions> coursesOptions)
+        public EfCoreCourseService(MyCourseDbContext dbContext, IOptionsMonitor<CoursesOptions> coursesOptions, IImagePersister imagePersister)
         {
             this.coursesOptions = coursesOptions;
             this.dbContext = dbContext;
+            this.imagePersister = imagePersister;
         }
 
         public async Task<CourseDetailViewModel> GetCourseAsync(int id)
@@ -170,6 +172,9 @@ namespace MyCourse.Models.Services.Application
             course.changeDescription(inputModel.Description);
             course.changeEmail(inputModel.Email);
             // dbContext.Courses.Update(entity);
+
+            string imagePath = await imagePersister.SaveCourseImageAsync(inputModel.Id, inputModel.Image);
+            course.ChangeImagePath(imagePath);
 
             try
             {

@@ -20,12 +20,14 @@ namespace MyCourse.Models.Services.Application
         private readonly IDatabaseAccessor db;
         private readonly IOptionsMonitor<CoursesOptions> coursesOptions;
         private readonly ILogger<AdoNetCourseService> logger;
+        private readonly IImagePersister imagePersister;
 
-        public AdoNetCourseService(IDatabaseAccessor db, IOptionsMonitor<CoursesOptions> coursesOptions, ILogger<AdoNetCourseService> logger)
+        public AdoNetCourseService(IDatabaseAccessor db, IOptionsMonitor<CoursesOptions> coursesOptions, ILogger<AdoNetCourseService> logger, IImagePersister imagePersister)
         {
             this.logger = logger;
             this.coursesOptions = coursesOptions;
             this.db = db;
+            this.imagePersister = imagePersister;
         }
         public async Task<CourseDetailViewModel> GetCourseAsync(int id)
         {
@@ -150,17 +152,30 @@ namespace MyCourse.Models.Services.Application
 
         public async Task<CourseDetailViewModel> EditCourseAsync(CourseEditInputModel inputModel)
         {
+            var dataSet = await db.QueryAsync($"SELECT COUNT(*) FROM Courses WHERE Id={inputModel.Id}");
+            if(Convert.ToInt32(dataSet.Tables[0].Rows[0][0]) == 0)
+            {
+                throw new CourseNotFoundException(inputModel.Id);
+            }
+
             FormattableString query = $@"UPDATE Courses SET Title={inputModel.Title}, Description={inputModel.Description}, Email={inputModel.Email}, ImagePath={inputModel.ImagePath}, FullPrice_Amount={inputModel.FullPrice.Amount}, FullPrice_Currency={inputModel.FullPrice.Currency}, CurrentPrice_Amount={inputModel.CurrentPrice.Amount}, CurrentPrice_Currency={inputModel.CurrentPrice.Currency} WHERE Id={inputModel.Id}";
             try
             {
-                var dataSet = await db.QueryAsync(query);
-                CourseDetailViewModel course = await GetCourseAsync(inputModel.Id);
-                return course;
+                dataSet = await db.QueryAsync(query);
             }
             catch (SqliteException exc) when (exc.SqliteErrorCode == 19)
             {
                 throw new CourseTitleUnavailableException(inputModel.Title, exc);
             }
+
+            if(inputModel.Image != null)
+            {
+                string imagePath = await imagePersister.SaveCourseImageAsync(inputModel.Id, inputModel.Image);
+                dataSet = await db.QueryAsync($"UPDATE Courses SET ImagePath={imagePath} WHERE Id={inputModel.Id}");
+            }
+
+            CourseDetailViewModel course = await GetCourseAsync(inputModel.Id);
+            return course;
         }
     }
 }

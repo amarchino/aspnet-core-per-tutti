@@ -58,6 +58,7 @@ namespace MyCourse
                     break;
             }
             services.AddTransient<ICachedCourseService, MemoryCacheCourseService>();
+            services.AddTransient<IImagePersister, InsecureImagePersister>();
 
             // Options
             services.Configure<ConnectionStringsOptions>(configuration.GetSection("ConnectionStrings"));
