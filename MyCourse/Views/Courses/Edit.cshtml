@@ -52,7 +52,7 @@
           </div>
           <div class="form-group">
             <label asp-for="ImagePath"></label>
-            <img id="preview" src="@Model.ImagePath" class="img-fluid" asp-append-version="false" />
+            <img id="preview" src="@Model.ImagePath" class="img-fluid" asp-append-version="true" />
             <div class="custom-file mt-3">
               <input type="file" class="custom-file-input" asp-for="Image" onchange="updatePreview(this)">
               <label class="custom-file-label" asp-for="Image"></label>
