@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,6 +42,8 @@ namespace MyCourse
             .AddRazorRuntimeCompilation()
             #endif
             ;
+
+            services.Configure<KestrelServerOptions>(configuration.GetSection("Kestrel"));
 
             var persistence = Persistence.EfCore;
             switch(persistence)
