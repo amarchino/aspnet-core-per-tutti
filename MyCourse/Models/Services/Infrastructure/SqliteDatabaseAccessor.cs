@@ -7,6 +7,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MyCourse.Models.Exceptions.Infrastructure;
 using MyCourse.Models.Options;
 using MyCourse.Models.ValueTypes;
 
@@ -20,6 +21,11 @@ namespace MyCourse.Models.Services.Infrastructure
         {
             this.logger = logger;
             this.connectionStringsOptions = connectionStringsOptions;
+        }
+
+        public Task<int> CommandAsync(FormattableString command)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<DataSet> QueryAsync(FormattableString formattableQuery)
@@ -45,22 +51,35 @@ namespace MyCourse.Models.Services.Infrastructure
                 using(var cmd = new SqliteCommand(query, conn))
                 {
                     cmd.Parameters.AddRange(sqliteParameters);
-                    using(var reader = await cmd.ExecuteReaderAsync())
+
+                    try
                     {
-                        var dataSet = new DataSet();
-                        dataSet.EnforceConstraints = false;
-
-                        do
+                        using(var reader = await cmd.ExecuteReaderAsync())
                         {
-                            var dataTable = new DataTable();
-                            dataSet.Tables.Add(dataTable);
-                            dataTable.Load(reader);
-                        } while(!reader.IsClosed);
+                            var dataSet = new DataSet();
+                            dataSet.EnforceConstraints = false;
 
-                        return dataSet;
+                            do
+                            {
+                                var dataTable = new DataTable();
+                                dataSet.Tables.Add(dataTable);
+                                dataTable.Load(reader);
+                            } while(!reader.IsClosed);
+
+                            return dataSet;
+                        }
+                    }
+                    catch(SqliteException exc) when (exc.SqliteErrorCode == 19)
+                    {
+                        throw new ConstraintViolationException(exc);
                     }
                 }
             }
+        }
+
+        public Task<T> QueryScalarAsync<T>(FormattableString query)
+        {
+            throw new NotImplementedException();
         }
     }
 }

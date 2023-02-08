@@ -27,3 +27,5 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg -o /usr/share/keyrings/yar
 
 # Set easier configuration
 RUN chmod 777 /usr/share/dotnet/sdk
+
+RUN /usr/bin/dotnet dev-certs https

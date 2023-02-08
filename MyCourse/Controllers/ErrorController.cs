@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MyCourse.Models.Exceptions;
+using MyCourse.Models.Exceptions.Application;
 
 namespace MyCourse.Controllers
 {
