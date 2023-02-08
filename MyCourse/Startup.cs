@@ -45,7 +45,7 @@ namespace MyCourse
 
             services.Configure<KestrelServerOptions>(configuration.GetSection("Kestrel"));
 
-            var persistence = Persistence.AdoNet;
+            var persistence = Persistence.EfCore;
             switch(persistence)
             {
                 case Persistence.AdoNet:

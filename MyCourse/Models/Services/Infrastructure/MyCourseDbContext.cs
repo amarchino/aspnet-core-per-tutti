@@ -39,6 +39,8 @@ namespace MyCourse.Models.Services.Infrastructure
                 entity.HasMany(course => course.Lessons)
                     .WithOne(lesson => lesson.Course)
                     .HasForeignKey(lesson => lesson.CourseId); // Opzionale se si chiama CourseId
+
+                entity.Property(course => course.RowVersion).IsRowVersion();
             });
 
             modelBuilder.Entity<Lesson>(entity =>

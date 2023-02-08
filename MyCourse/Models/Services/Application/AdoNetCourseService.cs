@@ -138,7 +138,7 @@ namespace MyCourse.Models.Services.Application
 
         public async Task<CourseEditInputModel> GetCourseForEditingAsync(int id)
         {
-            FormattableString query = $@"SELECT Id, Title, Description, ImagePath, Email, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency FROM Courses WHERE Id = {id}";
+            FormattableString query = $@"SELECT Id, Title, Description, ImagePath, Email, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency, RowVersion FROM Courses WHERE Id = {id}";
             DataSet dataSet = await db.QueryAsync(query);
             var courseTable = dataSet.Tables[0];
             if(courseTable.Rows.Count != 1)
@@ -159,14 +159,18 @@ namespace MyCourse.Models.Services.Application
                 {
                     imagePath = await imagePersister.SaveCourseImageAsync(inputModel.Id, inputModel.Image);
                 }
-                var affectedRows = await db.CommandAsync($@"UPDATE Courses SET Title={inputModel.Title}, Description={inputModel.Description}, Email={inputModel.Email}, ImagePath=COALESCE({imagePath}, ImagePath), FullPrice_Amount={inputModel.FullPrice.Amount}, FullPrice_Currency={inputModel.FullPrice.Currency}, CurrentPrice_Amount={inputModel.CurrentPrice.Amount}, CurrentPrice_Currency={inputModel.CurrentPrice.Currency} WHERE Id={inputModel.Id}");
+                var affectedRows = await db.CommandAsync($@"UPDATE Courses SET Title={inputModel.Title}, Description={inputModel.Description}, Email={inputModel.Email}, ImagePath=COALESCE({imagePath}, ImagePath), FullPrice_Amount={inputModel.FullPrice.Amount}, FullPrice_Currency={inputModel.FullPrice.Currency}, CurrentPrice_Amount={inputModel.CurrentPrice.Amount}, CurrentPrice_Currency={inputModel.CurrentPrice.Currency} WHERE Id={inputModel.Id} AND RowVersion={inputModel.RowVersion}");
                 if(affectedRows == 0)
                 {
+                    bool courseExists = await db.QueryScalarAsync<bool>($"SELECT COUNT(*) FROM Courses WHERE Id={inputModel.Id}");
+                    if(courseExists)
+                    {
+                        throw new OptimisticConcurrencyException();
+                    }
                     throw new CourseNotFoundException(inputModel.Id);
                 }
             }
             catch(ConstraintViolationException exc)
-            // catch (SqliteException exc) when (exc.SqliteErrorCode == 19)
             {
                 throw new CourseTitleUnavailableException(inputModel.Title, exc);
             }
