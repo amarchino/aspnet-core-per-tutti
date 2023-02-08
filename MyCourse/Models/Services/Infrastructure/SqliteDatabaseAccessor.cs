@@ -4,7 +4,6 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MyCourse.Models.Exceptions.Infrastructure;
@@ -23,63 +22,76 @@ namespace MyCourse.Models.Services.Infrastructure
             this.connectionStringsOptions = connectionStringsOptions;
         }
 
-        public Task<int> CommandAsync(FormattableString command)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<DataSet> QueryAsync(FormattableString formattableQuery)
         {
             logger.LogDebug(formattableQuery.Format, formattableQuery.GetArguments());
+
+            using SqliteConnection conn = await GetOpenedConnection();
+            using SqliteCommand cmd = GetCommand(formattableQuery, conn);
+
+            using var reader = await cmd.ExecuteReaderAsync();
+            var dataSet = new DataSet();
+
+            do
+            {
+                var dataTable = new DataTable();
+                dataSet.Tables.Add(dataTable);
+                dataTable.Load(reader);
+            } while (!reader.IsClosed);
+
+            return dataSet;
+        }
+
+        private static SqliteCommand GetCommand(FormattableString formattableQuery, SqliteConnection conn)
+        {
             var queryArguments = formattableQuery.GetArguments();
             var sqliteParameters = new List<SqliteParameter>();
-            for(var i = 0; i < queryArguments.Length; i++)
+            for (var i = 0; i < queryArguments.Length; i++)
             {
-                if(queryArguments[i] is Sql)
+                if (queryArguments[i] is Sql)
                 {
                     continue;
                 }
-                var parameter = new SqliteParameter(i.ToString(), queryArguments[i]);
+                var parameter = new SqliteParameter(i.ToString(), queryArguments[i] ?? DBNull.Value);
                 sqliteParameters.Add(parameter);
                 queryArguments[i] = "@" + i;
             }
             string query = formattableQuery.ToString();
 
-            using (var conn = new SqliteConnection(connectionStringsOptions.CurrentValue.Default))
+            var cmd = new SqliteCommand(query, conn);
+            cmd.Parameters.AddRange(sqliteParameters);
+            return cmd;
+        }
+
+        private async Task<SqliteConnection> GetOpenedConnection()
+        {
+            var conn = new SqliteConnection(connectionStringsOptions.CurrentValue.Default);
+            await conn.OpenAsync();
+            return conn;
+        }
+
+        public async Task<int> CommandAsync(FormattableString formattableCommand)
+        {
+            using SqliteConnection conn = await GetOpenedConnection();
+            using SqliteCommand cmd = GetCommand(formattableCommand, conn);
+
+            try
             {
-                await conn.OpenAsync();
-                using(var cmd = new SqliteCommand(query, conn))
-                {
-                    cmd.Parameters.AddRange(sqliteParameters);
-
-                    try
-                    {
-                        using(var reader = await cmd.ExecuteReaderAsync())
-                        {
-                            var dataSet = new DataSet();
-                            dataSet.EnforceConstraints = false;
-
-                            do
-                            {
-                                var dataTable = new DataTable();
-                                dataSet.Tables.Add(dataTable);
-                                dataTable.Load(reader);
-                            } while(!reader.IsClosed);
-
-                            return dataSet;
-                        }
-                    }
-                    catch(SqliteException exc) when (exc.SqliteErrorCode == 19)
-                    {
-                        throw new ConstraintViolationException(exc);
-                    }
-                }
+                int affectedRows = await cmd.ExecuteNonQueryAsync();
+                return affectedRows;
+            }
+            catch (SqliteException exc) when (exc.SqliteErrorCode == 19)
+            {
+                throw new ConstraintViolationException(exc);
             }
         }
 
-        public Task<T> QueryScalarAsync<T>(FormattableString query)
+        public async Task<T> QueryScalarAsync<T>(FormattableString formattableQuery)
         {
-            throw new NotImplementedException();
+            using SqliteConnection conn = await GetOpenedConnection();
+            using SqliteCommand cmd = GetCommand(formattableQuery, conn);
+            object result = await cmd.ExecuteScalarAsync();
+            return (T) Convert.ChangeType(result, typeof(T));
         }
     }
 }

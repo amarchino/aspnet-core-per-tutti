@@ -35,7 +35,7 @@ namespace MyCourse.Models.InputModels
         Display(Name = "Prezzo intero")]
         public Money FullPrice { get; set; }
         [Required(ErrorMessage = "Il prezzo corrent è obbligatorio"),
-        Display(Name = "Prezzo corrent")]
+        Display(Name = "Prezzo corrente")]
         public Money CurrentPrice { get; set; }
         [Display(Name = "Nuova immagine...")]
         public IFormFile Image { get; set; }
