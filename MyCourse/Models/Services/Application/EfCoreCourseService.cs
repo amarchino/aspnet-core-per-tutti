@@ -179,8 +179,11 @@ namespace MyCourse.Models.Services.Application
 
             try
             {
-                string imagePath = await imagePersister.SaveCourseImageAsync(inputModel.Id, inputModel.Image);
-                course.ChangeImagePath(imagePath);
+                if(inputModel.Image != null)
+                {
+                    string imagePath = await imagePersister.SaveCourseImageAsync(inputModel.Id, inputModel.Image);
+                    course.ChangeImagePath(imagePath);
+                }
             }
             catch(Exception exc)
             {
