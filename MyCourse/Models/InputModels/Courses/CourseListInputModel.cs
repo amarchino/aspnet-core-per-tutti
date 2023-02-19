@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using MyCourse.Customizations.ModelBinders;
 using MyCourse.Models.Options;
 
-namespace MyCourse.Models.InputModels
+namespace MyCourse.Models.InputModels.Courses
 {
     [ModelBinder(BinderType = typeof(CourseListInputModelBinder))]
     public class CourseListInputModel
@@ -20,7 +20,7 @@ namespace MyCourse.Models.InputModels
 
         public CourseListInputModel(string search, int page, string orderby, bool ascending, int limit, CoursesOrderOptions orderOptions)
         {
-            if(!orderOptions.Allow.Contains(orderby))
+            if (!orderOptions.Allow.Contains(orderby))
             {
                 orderby = orderOptions.By;
                 ascending = orderOptions.Ascending;

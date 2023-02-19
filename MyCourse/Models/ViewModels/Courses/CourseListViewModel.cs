@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MyCourse.Models.InputModels;
+using MyCourse.Models.InputModels.Courses;
 
-namespace MyCourse.Models.ViewModels
+namespace MyCourse.Models.ViewModels.Courses
 {
     public class CourseListViewModel : IPaginationInfo
     {

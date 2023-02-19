@@ -1,16 +1,21 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using MyCourse.Models.Enums;
+using MyCourse.Models.InputModels.Courses;
 using MyCourse.Models.ValueTypes;
 using MyCourse.Models.ViewModels;
+using MyCourse.Models.ViewModels.Courses;
+using MyCourse.Models.ViewModels.Lessons;
 
-namespace MyCourse.Models.Services.Application
+namespace MyCourse.Models.Services.Application.Courses
 {
     public class CourseService : ICourseService
     {
-        public List<CourseViewModel> GetCourses()
+        public Task<ListViewModel<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
         {
-            var courseList = new List<CourseViewModel>();
+            var courseList = new ListViewModel<CourseViewModel>();
+            courseList.TotalCount = 20;
             var rand = new Random();
             for (int i = 1; i <= 20; i++)
             {
@@ -25,12 +30,13 @@ namespace MyCourse.Models.Services.Application
                     Rating = rand.NextDouble() * 5.0,
                     ImagePath = "~/logo.svg"
                 };
-                courseList.Add(course);
+                courseList.Results.Add(course);
             }
-            return courseList;
+
+            return Task.FromResult(courseList);
         }
 
-        public CourseDetailViewModel GetCourse(int id)
+        public Task<CourseDetailViewModel> GetCourseAsync(int id)
         {
             var rand = new Random();
             var price = Convert.ToDecimal(rand.NextDouble() * 10 + 10);
@@ -57,7 +63,37 @@ namespace MyCourse.Models.Services.Application
                 course.Lessons.Add(lesson);
             }
 
-            return course;
+            return Task.FromResult(course);
+        }
+
+        public Task<List<CourseViewModel>> getBestRatingCoursesAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<CourseViewModel>> getMostRecentCoursesAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<CourseDetailViewModel> CreateCourseAsync(CourseCreateInputModel inputModel)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> IsTitleAvailableAsync(string title, int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<CourseEditInputModel> GetCourseForEditingAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<CourseDetailViewModel> EditCourseAsync(CourseEditInputModel inputModel)
+        {
+            throw new NotImplementedException();
         }
     }
 }

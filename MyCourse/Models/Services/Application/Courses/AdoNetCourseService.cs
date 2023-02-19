@@ -9,13 +9,15 @@ using Microsoft.Extensions.Options;
 using MyCourse.Models.Exceptions;
 using MyCourse.Models.Exceptions.Application;
 using MyCourse.Models.Exceptions.Infrastructure;
-using MyCourse.Models.InputModels;
+using MyCourse.Models.InputModels.Courses;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Infrastructure;
 using MyCourse.Models.ValueTypes;
 using MyCourse.Models.ViewModels;
+using MyCourse.Models.ViewModels.Courses;
+using MyCourse.Models.ViewModels.Lessons;
 
-namespace MyCourse.Models.Services.Application
+namespace MyCourse.Models.Services.Application.Courses
 {
     public class AdoNetCourseService : ICourseService
     {
@@ -39,7 +41,8 @@ namespace MyCourse.Models.Services.Application
             DataSet dataSet = await db.QueryAsync(query);
             // Course
             var courseTable = dataSet.Tables[0];
-            if(courseTable.Rows.Count != 1) {
+            if (courseTable.Rows.Count != 1)
+            {
                 logger.LogWarning("Course {id} not found", id);
                 throw new CourseNotFoundException(id);
             }
@@ -47,7 +50,7 @@ namespace MyCourse.Models.Services.Application
 
             // Course lessons
             var lessonDataTable = dataSet.Tables[1];
-            foreach(DataRow lessonRow in lessonDataTable.Rows)
+            foreach (DataRow lessonRow in lessonDataTable.Rows)
             {
                 courseDetailViewModel.Lessons.Add(LessonViewModel.fromDataRow(lessonRow));
             }
@@ -56,7 +59,7 @@ namespace MyCourse.Models.Services.Application
         public async Task<ListViewModel<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
         {
             var orderBy = model.OrderBy;
-            if(orderBy == "CurrentPrice")
+            if (orderBy == "CurrentPrice")
             {
                 orderBy = "CurrentPrice_Amount";
             }
@@ -65,7 +68,7 @@ namespace MyCourse.Models.Services.Application
             FormattableString query = $@"SELECT Id, Title, ImagePath, Author, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency
                 FROM Courses
                 WHERE UPPER(Title) LIKE UPPER({"%" + model.Search + "%"})
-                ORDER BY {(Sql) orderBy} {(Sql) direction}
+                ORDER BY {(Sql)orderBy} {(Sql)direction}
                 LIMIT {model.Limit}
                 OFFSET {model.Offset};
 
@@ -75,7 +78,7 @@ namespace MyCourse.Models.Services.Application
             DataSet dataSet = await db.QueryAsync(query);
             var dataTable = dataSet.Tables[0];
             var courseList = new List<CourseViewModel>();
-            foreach(DataRow courseRow in dataTable.Rows)
+            foreach (DataRow courseRow in dataTable.Rows)
             {
                 var course = CourseViewModel.FromDataRow(courseRow);
                 courseList.Add(course);
@@ -141,7 +144,7 @@ namespace MyCourse.Models.Services.Application
             FormattableString query = $@"SELECT Id, Title, Description, ImagePath, Email, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency, RowVersion FROM Courses WHERE Id = {id}";
             DataSet dataSet = await db.QueryAsync(query);
             var courseTable = dataSet.Tables[0];
-            if(courseTable.Rows.Count != 1)
+            if (courseTable.Rows.Count != 1)
             {
                 logger.LogWarning("Course {id} not found", id);
                 throw new CourseNotFoundException(id);
@@ -155,26 +158,26 @@ namespace MyCourse.Models.Services.Application
             try
             {
                 string imagePath = null;
-                if(inputModel.Image != null)
+                if (inputModel.Image != null)
                 {
                     imagePath = await imagePersister.SaveCourseImageAsync(inputModel.Id, inputModel.Image);
                 }
                 var affectedRows = await db.CommandAsync($@"UPDATE Courses SET Title={inputModel.Title}, Description={inputModel.Description}, Email={inputModel.Email}, ImagePath=COALESCE({imagePath}, ImagePath), FullPrice_Amount={inputModel.FullPrice.Amount}, FullPrice_Currency={inputModel.FullPrice.Currency}, CurrentPrice_Amount={inputModel.CurrentPrice.Amount}, CurrentPrice_Currency={inputModel.CurrentPrice.Currency} WHERE Id={inputModel.Id} AND RowVersion={inputModel.RowVersion}");
-                if(affectedRows == 0)
+                if (affectedRows == 0)
                 {
                     bool courseExists = await db.QueryScalarAsync<bool>($"SELECT COUNT(*) FROM Courses WHERE Id={inputModel.Id}");
-                    if(courseExists)
+                    if (courseExists)
                     {
                         throw new OptimisticConcurrencyException();
                     }
                     throw new CourseNotFoundException(inputModel.Id);
                 }
             }
-            catch(ConstraintViolationException exc)
+            catch (ConstraintViolationException exc)
             {
                 throw new CourseTitleUnavailableException(inputModel.Title, exc);
             }
-            catch(ImagePersistenceException exc)
+            catch (ImagePersistenceException exc)
             {
                 throw new CourseImageInvalidException(inputModel.Id, exc);
             }

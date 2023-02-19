@@ -8,7 +8,7 @@ using MyCourse.Controllers;
 using MyCourse.Models.Enums;
 using MyCourse.Models.ValueTypes;
 
-namespace MyCourse.Models.InputModels
+namespace MyCourse.Models.InputModels.Courses
 {
     public class CourseEditInputModel : IValidatableObject
     {
@@ -43,7 +43,7 @@ namespace MyCourse.Models.InputModels
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if(FullPrice.Currency != CurrentPrice.Currency)
+            if (FullPrice.Currency != CurrentPrice.Currency)
             {
                 yield return new ValidationResult("Il prezzo intero deve avere la stessa valuta del prezzo corrente", new[] { nameof(FullPrice) });
             }
@@ -62,11 +62,11 @@ namespace MyCourse.Models.InputModels
                 Description = Convert.ToString(courseRow["Description"]),
                 ImagePath = Convert.ToString(courseRow["ImagePath"]),
                 Email = Convert.ToString(courseRow["Email"]),
-                FullPrice = new Money (
+                FullPrice = new Money(
                     Enum.Parse<Currency>(Convert.ToString(courseRow["FullPrice_Currency"])),
                     Convert.ToDecimal(courseRow["FullPrice_Amount"])
                 ),
-                CurrentPrice = new Money (
+                CurrentPrice = new Money(
                     Enum.Parse<Currency>(Convert.ToString(courseRow["CurrentPrice_Currency"])),
                     Convert.ToDecimal(courseRow["CurrentPrice_Amount"])
                 ),

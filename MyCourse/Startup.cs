@@ -12,7 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MyCourse.Customizations.ModelBinders;
 using MyCourse.Models.Options;
-using MyCourse.Models.Services.Application;
+using MyCourse.Models.Services.Application.Courses;
+using MyCourse.Models.Services.Application.Lessons;
 using MyCourse.Models.Services.Infrastructure;
 
 namespace MyCourse
@@ -50,10 +51,12 @@ namespace MyCourse
             {
                 case Persistence.AdoNet:
                     services.AddTransient<ICourseService, AdoNetCourseService>();
+                    services.AddTransient<ILessonService, AdoNetLessonService>();
                     services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
                     break;
                 case Persistence.EfCore:
                     services.AddTransient<ICourseService, EfCoreCourseService>();
+                    services.AddTransient<ILessonService, EfCoreLessonService>();
                     services.AddDbContextPool<MyCourseDbContext>(optionsBuilder => {
                         string connectionString = configuration["ConnectionStrings:Default"];
                         optionsBuilder.UseSqlite(connectionString);
@@ -61,6 +64,7 @@ namespace MyCourse
                     break;
             }
             services.AddTransient<ICachedCourseService, MemoryCacheCourseService>();
+            services.AddTransient<ICachedLessonService, MemoryCacheLessonService>();
             services.AddTransient<IImagePersister, MagickNetImagePersister>();
 
             // Options

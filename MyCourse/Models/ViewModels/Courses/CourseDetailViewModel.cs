@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 using MyCourse.Models.Entities;
 using MyCourse.Models.Enums;
 using MyCourse.Models.ValueTypes;
+using MyCourse.Models.ViewModels.Lessons;
 
-namespace MyCourse.Models.ViewModels
+namespace MyCourse.Models.ViewModels.Courses
 {
     public class CourseDetailViewModel : CourseViewModel
     {
@@ -26,18 +27,19 @@ namespace MyCourse.Models.ViewModels
 
         public static new CourseDetailViewModel FromDataRow(DataRow courseRow)
         {
-            return new CourseDetailViewModel {
+            return new CourseDetailViewModel
+            {
                 Id = Convert.ToInt32(courseRow["Id"]),
                 Description = Convert.ToString(courseRow["Description"]),
                 Title = Convert.ToString(courseRow["Title"]),
                 ImagePath = Convert.ToString(courseRow["ImagePath"]),
                 Author = Convert.ToString(courseRow["Author"]),
                 Rating = Convert.ToDouble(courseRow["Rating"]),
-                FullPrice = new Money (
+                FullPrice = new Money(
                     Enum.Parse<Currency>(Convert.ToString(courseRow["FullPrice_Currency"])),
                     Convert.ToDecimal(courseRow["FullPrice_Amount"])
                 ),
-                CurrentPrice = new Money (
+                CurrentPrice = new Money(
                     Enum.Parse<Currency>(Convert.ToString(courseRow["CurrentPrice_Currency"])),
                     Convert.ToDecimal(courseRow["CurrentPrice_Amount"])
                 ),
@@ -47,7 +49,8 @@ namespace MyCourse.Models.ViewModels
 
         internal static CourseDetailViewModel FromEntity(Course course)
         {
-            return new CourseDetailViewModel {
+            return new CourseDetailViewModel
+            {
                 Id = course.Id,
                 Description = course.Description,
                 Title = course.Title,

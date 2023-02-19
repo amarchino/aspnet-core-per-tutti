@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MyCourse.Models.InputModels;
+using MyCourse.Models.InputModels.Courses;
 using MyCourse.Models.ViewModels;
+using MyCourse.Models.ViewModels.Courses;
 
-namespace MyCourse.Models.Services.Application
+namespace MyCourse.Models.Services.Application.Courses
 {
     public interface ICourseService
     {
