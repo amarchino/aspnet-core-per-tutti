@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyCourse.Models.Entities;
+using MyCourse.Models.Enums;
 
 namespace MyCourse.Models.Services.Infrastructure
 {
@@ -42,6 +43,9 @@ namespace MyCourse.Models.Services.Infrastructure
 
                 entity.Property(course => course.RowVersion).IsRowVersion();
                 entity.HasIndex(course => course.Title).IsUnique();
+                entity.Property(course => course.Status).HasConversion<string>();
+
+                entity.HasQueryFilter(course => course.Status != CourseStatus.Deleted);
             });
 
             modelBuilder.Entity<Lesson>(entity =>

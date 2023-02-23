@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using MyCourse.Models.ValueTypes;
+using MyCourse.Models.Enums;
 
 namespace MyCourse.Models.Entities
 {
@@ -21,6 +22,7 @@ namespace MyCourse.Models.Entities
             Author = author;
             ImagePath = "/Courses/default.png";
             Lessons = new HashSet<Lesson>();
+            ChangeStatus(CourseStatus.Draft);
         }
 
         public int Id { get; private set; }
@@ -33,6 +35,7 @@ namespace MyCourse.Models.Entities
         public Money FullPrice { get; private set; }
         public Money CurrentPrice { get; private set; }
         public string RowVersion { get; private set; }
+        public CourseStatus Status { get; private set; }
 
         public virtual ICollection<Lesson> Lessons { get; private set; }
 
@@ -63,7 +66,7 @@ namespace MyCourse.Models.Entities
             CurrentPrice = newDiscountPrice;
         }
 
-        internal void changeDescription(string newDescription)
+        public void changeDescription(string newDescription)
         {
             if(string.IsNullOrEmpty(newDescription))
             {
@@ -72,7 +75,7 @@ namespace MyCourse.Models.Entities
             Description = newDescription;
         }
 
-        internal void changeEmail(string newEmail)
+        public void changeEmail(string newEmail)
         {
             if(string.IsNullOrEmpty(newEmail))
             {
@@ -81,13 +84,18 @@ namespace MyCourse.Models.Entities
             Email = newEmail;
         }
 
-        internal void ChangeImagePath(string newImagePath)
+        public void ChangeImagePath(string newImagePath)
         {
             if(string.IsNullOrEmpty(newImagePath))
             {
                 throw new ArgumentException("Image path can't be empty");
             }
             ImagePath = newImagePath;
+        }
+
+        public void ChangeStatus(CourseStatus newStatus)
+        {
+            Status = newStatus;
         }
     }
 }

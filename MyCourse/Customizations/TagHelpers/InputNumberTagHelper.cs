@@ -26,6 +26,10 @@ namespace MyCourse.Customizations.TagHelpers
             {
                 return;
             }
+            if(For.Model == null)
+            {
+                return;
+            }
 
             decimal value = (decimal)For.Model;
             string formattedValue = value.ToString("F2", CultureInfo.InvariantCulture);

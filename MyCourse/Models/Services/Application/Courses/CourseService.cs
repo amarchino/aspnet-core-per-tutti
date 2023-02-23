@@ -95,5 +95,10 @@ namespace MyCourse.Models.Services.Application.Courses
         {
             throw new NotImplementedException();
         }
+
+        public Task DeleteCourseAsync(CourseDeleteInputModel inputModel)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

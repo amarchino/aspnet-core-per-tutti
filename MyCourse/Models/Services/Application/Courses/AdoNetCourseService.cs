@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MyCourse.Models.Enums;
 using MyCourse.Models.Exceptions;
 using MyCourse.Models.Exceptions.Application;
 using MyCourse.Models.Exceptions.Infrastructure;
@@ -37,7 +38,7 @@ namespace MyCourse.Models.Services.Application.Courses
         {
             logger.LogInformation("Course {id} requested", id);
             FormattableString query = $@"SELECT Id, Title, Description, ImagePath, Author, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency FROM Courses WHERE Id={id};
-                SELECT Id, Title, Description, Duration FROM Lessons WHERE CourseId={id}";
+                SELECT Id, Title, Description, Duration FROM Lessons WHERE CourseId={id} AND Status<>'{nameof(CourseStatus.Deleted)}'";
             DataSet dataSet = await db.QueryAsync(query);
             // Course
             var courseTable = dataSet.Tables[0];
@@ -68,13 +69,15 @@ namespace MyCourse.Models.Services.Application.Courses
             FormattableString query = $@"SELECT Id, Title, ImagePath, Author, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency
                 FROM Courses
                 WHERE UPPER(Title) LIKE UPPER({"%" + model.Search + "%"})
+                AND Status<>'{nameof(CourseStatus.Deleted)}'
                 ORDER BY {(Sql)orderBy} {(Sql)direction}
                 LIMIT {model.Limit}
                 OFFSET {model.Offset};
 
                 SELECT COUNT(*)
                 FROM Courses
-                WHERE UPPER(Title) LIKE UPPER({"%" + model.Search + "%"})";
+                WHERE UPPER(Title) LIKE UPPER({"%" + model.Search + "%"})
+                AND Status<>'{nameof(CourseStatus.Deleted)}'";
             DataSet dataSet = await db.QueryAsync(query);
             var dataTable = dataSet.Tables[0];
             var courseList = new List<CourseViewModel>();
@@ -135,13 +138,13 @@ namespace MyCourse.Models.Services.Application.Courses
 
         public async Task<bool> IsTitleAvailableAsync(string title, int id)
         {
-            bool titleExists = await db.QueryScalarAsync<bool>($"SELECT COUNT(*) FROM Courses WHERE Title LIKE {title} AND Id<>{id}");
+            bool titleExists = await db.QueryScalarAsync<bool>($"SELECT COUNT(*) FROM Courses WHERE Title LIKE {title} AND Id<>{id} AND Status<>'{nameof(CourseStatus.Deleted)}'");
             return !titleExists;
         }
 
         public async Task<CourseEditInputModel> GetCourseForEditingAsync(int id)
         {
-            FormattableString query = $@"SELECT Id, Title, Description, ImagePath, Email, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency, RowVersion FROM Courses WHERE Id = {id}";
+            FormattableString query = $@"SELECT Id, Title, Description, ImagePath, Email, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency, RowVersion FROM Courses WHERE Id = {id} AND Status<>'{nameof(CourseStatus.Deleted)}'";
             DataSet dataSet = await db.QueryAsync(query);
             var courseTable = dataSet.Tables[0];
             if (courseTable.Rows.Count != 1)
@@ -162,7 +165,7 @@ namespace MyCourse.Models.Services.Application.Courses
                 {
                     imagePath = await imagePersister.SaveCourseImageAsync(inputModel.Id, inputModel.Image);
                 }
-                var affectedRows = await db.CommandAsync($@"UPDATE Courses SET Title={inputModel.Title}, Description={inputModel.Description}, Email={inputModel.Email}, ImagePath=COALESCE({imagePath}, ImagePath), FullPrice_Amount={inputModel.FullPrice.Amount}, FullPrice_Currency={inputModel.FullPrice.Currency}, CurrentPrice_Amount={inputModel.CurrentPrice.Amount}, CurrentPrice_Currency={inputModel.CurrentPrice.Currency} WHERE Id={inputModel.Id} AND RowVersion={inputModel.RowVersion}");
+                var affectedRows = await db.CommandAsync($@"UPDATE Courses SET Title={inputModel.Title}, Description={inputModel.Description}, Email={inputModel.Email}, ImagePath=COALESCE({imagePath}, ImagePath), FullPrice_Amount={inputModel.FullPrice.Amount}, FullPrice_Currency={inputModel.FullPrice.Currency}, CurrentPrice_Amount={inputModel.CurrentPrice.Amount}, CurrentPrice_Currency={inputModel.CurrentPrice.Currency} WHERE Id={inputModel.Id} AND RowVersion={inputModel.RowVersion} AND Status<>'{nameof(CourseStatus.Deleted)}'");
                 if (affectedRows == 0)
                 {
                     bool courseExists = await db.QueryScalarAsync<bool>($"SELECT COUNT(*) FROM Courses WHERE Id={inputModel.Id}");
@@ -184,6 +187,15 @@ namespace MyCourse.Models.Services.Application.Courses
 
             CourseDetailViewModel course = await GetCourseAsync(inputModel.Id);
             return course;
+        }
+
+        public async Task DeleteCourseAsync(CourseDeleteInputModel inputModel)
+        {
+            var affectedRows = await db.CommandAsync($@"UPDATE Courses SET Status='{nameof(CourseStatus.Deleted)}' WHERE Id={inputModel.Id} AND Status<>'{nameof(CourseStatus.Deleted)}'");
+            if (affectedRows == 0)
+            {
+                throw new CourseNotFoundException(inputModel.Id);
+            }
         }
     }
 }

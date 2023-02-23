@@ -93,5 +93,10 @@ namespace MyCourse.Models.Services.Application.Courses
             memoryCache.Remove($"Course{inputModel.Id}");
             return viewModel;
         }
+
+        public Task DeleteCourseAsync(CourseDeleteInputModel inputModel)
+        {
+            return courseService.DeleteCourseAsync(inputModel);
+        }
     }
 }

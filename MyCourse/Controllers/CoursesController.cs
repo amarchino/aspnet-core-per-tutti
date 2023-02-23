@@ -108,5 +108,13 @@ namespace MyCourse.Controllers
             ViewData["Title"] = "Modifica corso";
             return View(inputModel);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(CourseDeleteInputModel inputModel)
+        {
+            await courseService.DeleteCourseAsync(inputModel);
+            TempData["ConfirmationMessage"] = "Il corseo è stato eliminato ma potrebbe continuare a comparire negli elenchi per un breve periodo, finché la cache non viene aggiornata.";
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
