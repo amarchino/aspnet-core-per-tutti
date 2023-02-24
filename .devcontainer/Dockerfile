@@ -18,6 +18,10 @@ RUN wget --no-verbose https://download.visualstudio.microsoft.com/download/pr/43
     && tar --extract --file=/tmp/dotnet-sdk-3.0.103-linux-x64.tar.gz --directory /usr/share/dotnet \
     && rm /tmp/dotnet-sdk-3.0.103-linux-x64.tar.gz
 
+RUN wget --no-verbose https://download.visualstudio.microsoft.com/download/pr/e89c4f00-5cbb-4810-897d-f5300165ee60/027ace0fdcfb834ae0a13469f0b1a4c8/dotnet-sdk-3.1.426-linux-x64.tar.gz --directory-prefix=/tmp \
+    && tar --extract --file=/tmp/dotnet-sdk-3.1.426-linux-x64.tar.gz --directory /usr/share/dotnet \
+    && rm /tmp/dotnet-sdk-3.1.426-linux-x64.tar.gz
+
 # Install other versions of the runtime if necessary
 
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg -o /usr/share/keyrings/yarn-keyring.asc \
