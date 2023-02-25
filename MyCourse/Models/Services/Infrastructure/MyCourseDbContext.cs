@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using MyCourse.Models.Entities;
 using MyCourse.Models.Enums;
 
 namespace MyCourse.Models.Services.Infrastructure
 {
 
-    public partial class MyCourseDbContext : DbContext
+    public partial class MyCourseDbContext : IdentityDbContext
     {
 
         public MyCourseDbContext(DbContextOptions<MyCourseDbContext> options) : base(options)
@@ -17,6 +18,8 @@ namespace MyCourse.Models.Services.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Course>(entity =>
             {
                 entity.ToTable("Courses");

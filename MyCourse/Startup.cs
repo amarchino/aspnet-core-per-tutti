@@ -1,9 +1,6 @@
-﻿
-using System;
-using System.Globalization;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +28,8 @@ namespace MyCourse
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddResponseCaching();
+            services.AddRazorPages();
+
             services.AddMvc(options => {
                 CacheProfile homeProfile = new CacheProfile();
                 configuration.Bind("ResponseCache:Home", homeProfile);
@@ -55,6 +54,9 @@ namespace MyCourse
                     services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
                     break;
                 case Persistence.EfCore:
+                    services.AddDefaultIdentity<IdentityUser>()
+                        .AddEntityFrameworkStores<MyCourseDbContext>();
+
                     services.AddTransient<ICourseService, EfCoreCourseService>();
                     services.AddTransient<ILessonService, EfCoreLessonService>();
                     services.AddDbContextPool<MyCourseDbContext>(optionsBuilder => {
@@ -87,11 +89,14 @@ namespace MyCourse
             app.UseStaticFiles();
             // Endpoint Routing middleware
             app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseResponseCaching();
 
             // Endpoint middleware
             app.UseEndpoints(routeBuilder => {
                 routeBuilder.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                routeBuilder.MapRazorPages();
             });
         }
     }
