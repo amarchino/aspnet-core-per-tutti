@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MyCourse.Customizations.Identity;
 using MyCourse.Customizations.ModelBinders;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Application.Courses;
@@ -54,8 +55,16 @@ namespace MyCourse
                     services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
                     break;
                 case Persistence.EfCore:
-                    services.AddDefaultIdentity<IdentityUser>()
-                        .AddEntityFrameworkStores<MyCourseDbContext>();
+                    services.AddDefaultIdentity<IdentityUser>(options => {
+                        options.Password.RequireDigit = true;
+                        options.Password.RequiredLength = 8;
+                        options.Password.RequireUppercase = true;
+                        options.Password.RequireLowercase = true;
+                        options.Password.RequireNonAlphanumeric = true;
+                        options.Password.RequiredUniqueChars = 4;
+                    })
+                    .AddPasswordValidator<CommonPasswordValidator<IdentityUser>>()
+                    .AddEntityFrameworkStores<MyCourseDbContext>();
 
                     services.AddTransient<ICourseService, EfCoreCourseService>();
                     services.AddTransient<ILessonService, EfCoreLessonService>();
