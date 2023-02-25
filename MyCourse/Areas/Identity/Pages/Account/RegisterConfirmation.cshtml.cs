@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Hosting;
 using System.Threading.Tasks;
+using MyCourse.Models.Entities;
 
 namespace MyCourse.Areas.Identity.Pages.Account
 {
@@ -14,11 +15,11 @@ namespace MyCourse.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class RegisterConfirmationModel : PageModel
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _sender;
         private readonly IHostEnvironment env;
 
-        public RegisterConfirmationModel(UserManager<IdentityUser> userManager, IEmailSender sender, IHostEnvironment env)
+        public RegisterConfirmationModel(UserManager<ApplicationUser> userManager, IEmailSender sender, IHostEnvironment env)
         {
             _userManager = userManager;
             _sender = sender;
