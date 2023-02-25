@@ -64,7 +64,8 @@ namespace MyCourse
                         options.Password.RequiredUniqueChars = 4;
                     })
                     .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>()
-                    .AddEntityFrameworkStores<MyCourseDbContext>();
+                    .AddEntityFrameworkStores<MyCourseDbContext>()
+                    .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>();
 
                     services.AddTransient<ICourseService, EfCoreCourseService>();
                     services.AddTransient<ILessonService, EfCoreLessonService>();
