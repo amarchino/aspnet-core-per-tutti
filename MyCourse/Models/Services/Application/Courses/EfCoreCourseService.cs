@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -22,12 +23,18 @@ namespace MyCourse.Models.Services.Application.Courses
         private readonly MyCourseDbContext dbContext;
         private readonly IOptionsMonitor<CoursesOptions> coursesOptions;
         private readonly IImagePersister imagePersister;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
-        public EfCoreCourseService(MyCourseDbContext dbContext, IOptionsMonitor<CoursesOptions> coursesOptions, IImagePersister imagePersister)
+        public EfCoreCourseService(
+            MyCourseDbContext dbContext,
+            IOptionsMonitor<CoursesOptions> coursesOptions,
+            IImagePersister imagePersister,
+            IHttpContextAccessor httpContextAccessor)
         {
             this.coursesOptions = coursesOptions;
             this.dbContext = dbContext;
             this.imagePersister = imagePersister;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<CourseDetailViewModel> GetCourseAsync(int id)
@@ -123,7 +130,16 @@ namespace MyCourse.Models.Services.Application.Courses
 
         public async Task<CourseDetailViewModel> CreateCourseAsync(CourseCreateInputModel inputModel)
         {
-            var entity = new Course(inputModel.Title, "Mario Rossi");
+            string author;
+            try
+            {
+                author = httpContextAccessor.HttpContext.User.FindFirst("FullName").Value;
+            }
+            catch(NullReferenceException)
+            {
+                throw new UserUnknownException();
+            }
+            var entity = new Course(inputModel.Title, author);
             dbContext.Courses.Add(entity);
 
             try
