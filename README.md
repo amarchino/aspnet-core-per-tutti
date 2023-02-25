@@ -10,7 +10,11 @@ Companion repository for the Udemy Course [ASP.NET Core per tutti: costruiamo un
   ```
 - Dotnet outdated
   ```bash
-  dotnet tool update --global dotnet-outdated-tool
+  dotnet tool install --global dotnet-outdated-tool
+  ```
+- Dotnet scaffolding
+  ```bash
+  dotnet tool install --global dotnet-aspnet-codegenerator
   ```
 
 ## Authentication
