@@ -34,6 +34,11 @@ namespace MyCourse.Areas.Identity.Pages.Account.Manage
             [Phone(ErrorMessage = "Deve essere un numero di telefono valido")]
             [Display(Name = "Numero di telefono")]
             public string PhoneNumber { get; set; }
+
+            [Required(ErrorMessage = "Il nome completo è obbligatorio")]
+            [StringLength(100, MinimumLength = 3, ErrorMessage = "Il nome completo deve essere di almeno {2} e di al massimo {1} caratteri.")]
+            [Display(Name = "Nome completo")]
+            public string FullName { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -45,7 +50,8 @@ namespace MyCourse.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                FullName = user.FullName
             };
         }
 
@@ -75,12 +81,6 @@ namespace MyCourse.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
-            //TODO: PERSISTERE IL FULLNAME
-            //Passo1: Recuperare l'istanza di ApplicationUser (in realtà è stato fatto alla riga 65)
-            //Passo2: Modificare la sua proprietà FullName ottenendo il valore dall'input model
-            //Passo3: Persistere l'ApplicationUser invocando il metodo UpdateAsync dello user manager
-            //Passo4: Consultare la proprietà Success dell'IdentityResult perché se è false, visualizza un errore
-
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             if (Input.PhoneNumber != phoneNumber)
             {
@@ -88,6 +88,19 @@ namespace MyCourse.Areas.Identity.Pages.Account.Manage
                 if (!setPhoneResult.Succeeded)
                 {
                     StatusMessage = "Si è verificato un errore imprevisto nell'impostare il numero di telefono.";
+                    return RedirectToPage();
+                }
+
+            }
+            if(Input.FullName != user.FullName)
+            {
+                // Refresh user
+                user = await _userManager.GetUserAsync(User);
+                user.FullName = Input.FullName;
+                var updateUserResult = await _userManager.UpdateAsync(user);
+                if (!updateUserResult.Succeeded)
+                {
+                    StatusMessage = "Si è verificato un errore imprevisto nell'aggiornamento dei dati dell'utente.";
                     return RedirectToPage();
                 }
             }

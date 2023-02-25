@@ -13,7 +13,7 @@ namespace MyCourse.Controllers
     {
 
         // [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Client)]
-        [ResponseCache(CacheProfileName = "Home")]
+        // [ResponseCache(CacheProfileName = "Home")]
         public async Task<IActionResult> Index([FromServices] ICachedCourseService courseService)
         {
             ViewData["Title"] = "MyCourse";
