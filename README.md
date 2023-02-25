@@ -12,3 +12,7 @@ Companion repository for the Udemy Course [ASP.NET Core per tutti: costruiamo un
   ```bash
   dotnet tool update --global dotnet-outdated-tool
   ```
+
+## Authentication
+
+- student@example.com => student_PWD1
