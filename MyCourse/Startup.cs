@@ -14,6 +14,7 @@ using MyCourse.Models.Services.Application.Lessons;
 using MyCourse.Models.Services.Infrastructure;
 using MyCourse.Models.Entities;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using System;
 
 namespace MyCourse
 {
@@ -64,6 +65,9 @@ namespace MyCourse
                         options.Password.RequireNonAlphanumeric = true;
                         options.Password.RequiredUniqueChars = 4;
                         options.SignIn.RequireConfirmedAccount = true;
+                        options.Lockout.AllowedForNewUsers = true;
+                        options.Lockout.MaxFailedAccessAttempts = 5;
+                        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                     })
                     .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>()
                     .AddEntityFrameworkStores<MyCourseDbContext>()
