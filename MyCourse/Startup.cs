@@ -13,6 +13,7 @@ using MyCourse.Models.Services.Application.Courses;
 using MyCourse.Models.Services.Application.Lessons;
 using MyCourse.Models.Services.Infrastructure;
 using MyCourse.Models.Entities;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace MyCourse
 {
@@ -62,6 +63,7 @@ namespace MyCourse
                         options.Password.RequireLowercase = true;
                         options.Password.RequireNonAlphanumeric = true;
                         options.Password.RequiredUniqueChars = 4;
+                        options.SignIn.RequireConfirmedAccount = true;
                     })
                     .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>()
                     .AddEntityFrameworkStores<MyCourseDbContext>()
@@ -78,10 +80,12 @@ namespace MyCourse
             services.AddTransient<ICachedCourseService, MemoryCacheCourseService>();
             services.AddTransient<ICachedLessonService, MemoryCacheLessonService>();
             services.AddTransient<IImagePersister, MagickNetImagePersister>();
+            services.AddTransient<IEmailSender, MailKitEmailSender>();
 
             // Options
             services.Configure<ConnectionStringsOptions>(configuration.GetSection("ConnectionStrings"));
             services.Configure<CoursesOptions>(configuration.GetSection("Courses"));
+            services.Configure<SmtpOptions>(configuration.GetSection("Smtp"));
             // services.Configure<MemoryCacheOptions>(configuration.GetSection("MemoryCache"));
         }
 

@@ -20,3 +20,4 @@ Companion repository for the Udemy Course [ASP.NET Core per tutti: costruiamo un
 ## Authentication
 
 - student@example.com => student_PWD1
+- test@example.com => Pwd9876543210!
