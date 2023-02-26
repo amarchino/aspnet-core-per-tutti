@@ -80,14 +80,13 @@ namespace MyCourse.Models.Services.Application.Courses
                 AND Status<>'{nameof(CourseStatus.Deleted)}'";
             DataSet dataSet = await db.QueryAsync(query);
             var dataTable = dataSet.Tables[0];
-            var courseList = new List<CourseViewModel>();
+            List<CourseViewModel> courseList = new ();
             foreach (DataRow courseRow in dataTable.Rows)
             {
                 var course = CourseViewModel.FromDataRow(courseRow);
                 courseList.Add(course);
             }
-            ListViewModel<CourseViewModel> result = new ListViewModel<CourseViewModel>
-            {
+            ListViewModel<CourseViewModel> result = new() {
                 Results = courseList,
                 TotalCount = Convert.ToInt32(dataSet.Tables[1].Rows[0][0])
             };

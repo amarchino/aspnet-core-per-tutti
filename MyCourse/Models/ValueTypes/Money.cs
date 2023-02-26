@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MyCourse.Models.Enums;
 
 namespace MyCourse.Models.ValueTypes
 {
-    public class Money
+    public record Money
     {
         public Money() : this(Currency.EUR, 0.00m)
         {
@@ -23,7 +20,7 @@ namespace MyCourse.Models.ValueTypes
             {
                 return amount;
             }
-            set
+            init
             {
                 if (value < 0)
                 {
@@ -32,23 +29,7 @@ namespace MyCourse.Models.ValueTypes
                 amount = value;
             }
         }
-        public Currency Currency { get; set; }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null || GetType() != obj.GetType())
-            {
-                return false;
-            }
-            var money = obj as Money;
-            return Amount == money.Amount
-              && Currency == money.Currency;
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Amount, Currency);
-        }
+        public Currency Currency { get; init; }
 
         public override string ToString()
         {

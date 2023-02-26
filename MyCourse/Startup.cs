@@ -39,12 +39,7 @@ namespace MyCourse
                 options.CacheProfiles.Add("Home", homeProfile);
 
                 options.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
-            })
-            .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
-            #if DEBUG
-            .AddRazorRuntimeCompilation()
-            #endif
-            ;
+            });
 
             services.Configure<KestrelServerOptions>(configuration.GetSection("Kestrel"));
 
