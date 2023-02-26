@@ -48,6 +48,10 @@ namespace MyCourse.Models.Services.Infrastructure
                 entity.HasIndex(course => course.Title).IsUnique();
                 entity.Property(course => course.Status).HasConversion<string>();
 
+                entity.HasOne(course => course.AuthorUser)
+                    .WithMany(user => user.AuthoredCourses)
+                    .HasForeignKey(course => course.AuthorId);
+
                 entity.HasQueryFilter(course => course.Status != CourseStatus.Deleted);
             });
 

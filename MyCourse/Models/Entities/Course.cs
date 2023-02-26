@@ -8,18 +8,10 @@ namespace MyCourse.Models.Entities
 
     public partial class Course
     {
-        public Course(string title, string author)
+        public Course(string title, string author, string authorId)
         {
-            if(string.IsNullOrWhiteSpace(title))
-            {
-                throw new ArgumentException("The course must have a title");
-            }
-            if(string.IsNullOrWhiteSpace(author))
-            {
-                throw new ArgumentException("The course must have aa author");
-            }
-            Title = title;
-            Author = author;
+            ChangeTitle(title);
+            ChangeAuthor(author, authorId);
             ImagePath = "/Courses/default.png";
             Lessons = new HashSet<Lesson>();
             ChangeStatus(CourseStatus.Draft);
@@ -36,8 +28,10 @@ namespace MyCourse.Models.Entities
         public Money CurrentPrice { get; private set; }
         public string RowVersion { get; private set; }
         public CourseStatus Status { get; private set; }
+        public string AuthorId { get; private set; }
 
         public virtual ICollection<Lesson> Lessons { get; private set; }
+        public virtual ApplicationUser AuthorUser { get; private set; }
 
         public void ChangeTitle(string newTitle)
         {
@@ -46,6 +40,16 @@ namespace MyCourse.Models.Entities
                 throw new ArgumentException("The course must have a title");
             }
             Title = newTitle;
+        }
+
+        public void ChangeAuthor(string newAuthor, string newAuthorId)
+        {
+            if(string.IsNullOrWhiteSpace(newAuthor) || string.IsNullOrWhiteSpace(newAuthorId))
+            {
+                throw new ArgumentException("The course must have an author");
+            }
+            Author = newAuthor;
+            AuthorId = newAuthorId;
         }
 
         public void ChangePrices(Money newFullPrice, Money newDiscountPrice)

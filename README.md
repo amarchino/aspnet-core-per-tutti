@@ -6,7 +6,7 @@ Companion repository for the Udemy Course [ASP.NET Core per tutti: costruiamo un
 
 - Dotnet ef tools
   ```bash
-  dotnet tool install --global dotnet-ef
+  dotnet tool install --global dotnet-ef --version
   ```
 - Dotnet outdated
   ```bash
