@@ -48,16 +48,7 @@ namespace MyCourse
 
             services.Configure<KestrelServerOptions>(configuration.GetSection("Kestrel"));
 
-            var persistence = Persistence.EfCore;
-            switch(persistence)
-            {
-                case Persistence.AdoNet:
-                    services.AddTransient<ICourseService, AdoNetCourseService>();
-                    services.AddTransient<ILessonService, AdoNetLessonService>();
-                    services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
-                    break;
-                case Persistence.EfCore:
-                    services.AddDefaultIdentity<ApplicationUser>(options => {
+            var identityBuilder = services.AddDefaultIdentity<ApplicationUser>(options => {
                         options.Password.RequireDigit = true;
                         options.Password.RequiredLength = 8;
                         options.Password.RequireUppercase = true;
@@ -70,8 +61,20 @@ namespace MyCourse
                         options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                     })
                     .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>()
-                    .AddEntityFrameworkStores<MyCourseDbContext>()
                     .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>();
+
+            var persistence = Persistence.EfCore;
+            switch(persistence)
+            {
+                case Persistence.AdoNet:
+                    identityBuilder.AddUserStore<AdoNetUserStore>();
+
+                    services.AddTransient<ICourseService, AdoNetCourseService>();
+                    services.AddTransient<ILessonService, AdoNetLessonService>();
+                    services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
+                    break;
+                case Persistence.EfCore:
+                    identityBuilder.AddEntityFrameworkStores<MyCourseDbContext>();
 
                     services.AddTransient<ICourseService, EfCoreCourseService>();
                     services.AddTransient<ILessonService, EfCoreLessonService>();
