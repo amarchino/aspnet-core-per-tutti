@@ -33,7 +33,9 @@ namespace MyCourse
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddResponseCaching();
-            services.AddRazorPages();
+            services.AddRazorPages(options => {
+                options.Conventions.AllowAnonymousToPage("/Privacy");
+            });
 
             services.AddMvc(options => {
                 CacheProfile homeProfile = new();
