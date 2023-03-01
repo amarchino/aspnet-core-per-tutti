@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyCourse.Models.Services.Application.Courses;
 using MyCourse.Models.ViewModels.Courses;
@@ -14,6 +15,7 @@ namespace MyCourse.Controllers
 
         // [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Client)]
         // [ResponseCache(CacheProfileName = "Home")]
+        [AllowAnonymous]
         public async Task<IActionResult> Index([FromServices] ICachedCourseService courseService)
         {
             ViewData["Title"] = "MyCourse";

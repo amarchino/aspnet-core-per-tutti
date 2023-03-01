@@ -15,6 +15,8 @@ using MyCourse.Models.Services.Infrastructure;
 using MyCourse.Models.Entities;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using System;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace MyCourse
 {
@@ -34,11 +36,16 @@ namespace MyCourse
             services.AddRazorPages();
 
             services.AddMvc(options => {
-                CacheProfile homeProfile = new CacheProfile();
+                CacheProfile homeProfile = new();
                 configuration.Bind("ResponseCache:Home", homeProfile);
                 options.CacheProfiles.Add("Home", homeProfile);
 
                 options.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
+
+                AuthorizationPolicyBuilder policyBuilder = new();
+                AuthorizationPolicy policy = policyBuilder.RequireAuthenticatedUser().Build();
+                AuthorizeFilter filter = new(policy);
+                options.Filters.Add(filter);
             });
 
             services.Configure<KestrelServerOptions>(configuration.GetSection("Kestrel"));
