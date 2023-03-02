@@ -8,3 +8,9 @@
   <script src="~/lib/jquery-validation/dist/additional-methods.min.js"></script>
   <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
 </environment>
+
+<script>
+  $(function() {
+    $('[step]').rules('add', {step: false});
+  });
+</script>

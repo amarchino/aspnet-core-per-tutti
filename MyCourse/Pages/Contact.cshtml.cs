@@ -1,26 +1,44 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
+using MyCourse.Models.Services.Application.Courses;
+using MyCourse.Models.ViewModels.Courses;
 
 namespace MyCourse.Pages
 {
     [Authorize]
     public class ContactModel : PageModel
     {
-        private readonly ILogger<ContactModel> _logger;
 
-        public ContactModel(ILogger<ContactModel> logger)
+        public CourseDetailViewModel Course { get; private set; }
+        [Required(ErrorMessage = "Il testo della domanda è obbligatorio")]
+        [BindProperty]
+        public string Question { get; set; }
+
+        public async Task<IActionResult> OnGetAsync(int id, [FromServices] ICourseService courseService)
         {
-            _logger = logger;
+            try
+            {
+                Course = await courseService.GetCourseAsync(id);
+                return Page();
+            }
+            catch
+            {
+                return RedirectToAction("Index", "Courses");
+            }
         }
 
-        public void OnGet()
+        public async Task<IActionResult> OnPostAsync(int id, [FromServices] ICourseService courseService)
         {
+            if(ModelState.IsValid)
+            {
+                // Invio la domanda al docente
+                TempData["ConfirmationMessage"] = "La tua domanda è stata inviata";
+                return RedirectToAction("Detail", "Courses", new { id = id });
+            }
+            return await OnGetAsync(id, courseService);
         }
     }
 }
