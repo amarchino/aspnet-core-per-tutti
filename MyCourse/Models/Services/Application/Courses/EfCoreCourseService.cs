@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Ganss.XSS;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MyCourse.Models.Entities;
 using MyCourse.Models.Exceptions;
 using MyCourse.Models.Exceptions.Application;
+using MyCourse.Models.Exceptions.Infrastructure;
 using MyCourse.Models.InputModels.Courses;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Infrastructure;
@@ -25,17 +28,20 @@ namespace MyCourse.Models.Services.Application.Courses
         private readonly IOptionsMonitor<CoursesOptions> coursesOptions;
         private readonly IImagePersister imagePersister;
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IEmailClient emailClient;
 
         public EfCoreCourseService(
             MyCourseDbContext dbContext,
             IOptionsMonitor<CoursesOptions> coursesOptions,
             IImagePersister imagePersister,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IEmailClient emailClient)
         {
             this.coursesOptions = coursesOptions;
             this.dbContext = dbContext;
             this.imagePersister = imagePersister;
             this.httpContextAccessor = httpContextAccessor;
+            this.emailClient = emailClient;
         }
 
         public async Task<CourseDetailViewModel> GetCourseAsync(int id)
@@ -234,6 +240,42 @@ namespace MyCourse.Models.Services.Application.Courses
             }
             course.ChangeStatus(Enums.CourseStatus.Deleted);
             await dbContext.SaveChangesAsync();
+        }
+
+        public async Task SendQuestionToCourseAuthorAsync(int id, string question)
+        {
+            Course course = await dbContext.Courses.FindAsync(id);
+            if(course == null)
+            {
+                throw new CourseNotFoundException(id);
+            }
+
+            string userFullName;
+            string userEmail;
+
+            try
+            {
+                userFullName = httpContextAccessor.HttpContext.User.FindFirst("FullName").Value;
+                userEmail = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Email).Value;
+            }
+            catch(NullReferenceException)
+            {
+                throw new UserUnknownException();
+            }
+
+            // Sanitizzo la domanda dell'utente
+            question = new HtmlSanitizer(allowedTags: new string[0]).Sanitize(question);
+
+            string subject = $@"Domanda per il tuo corso ""{course.Title}""";
+            string message = $@"<p>L'utente {userFullName} (<a href=""{userEmail}"">{userEmail}</a>) ti ha inviato la seguente domanda:</p><p>{question}</p>";
+            try
+            {
+                await emailClient.SendEmailAsync(course.Email, userEmail, subject, message);
+            }
+            catch
+            {
+                throw new SendException();
+            }
         }
     }
 }

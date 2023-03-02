@@ -11,7 +11,7 @@ using MyCourse.Models.Options;
 
 namespace MyCourse.Models.Services.Infrastructure
 {
-    public class MailKitEmailSender : IEmailSender
+    public class MailKitEmailSender : IEmailClient
     {
         private readonly IOptionsMonitor<SmtpOptions> smtpOptions;
         private readonly ILogger<MailKitEmailSender> logger;
@@ -21,7 +21,12 @@ namespace MyCourse.Models.Services.Infrastructure
             this.logger = logger;
             this.smtpOptions = emailOptions;
         }
-        public async Task SendEmailAsync(string email, string subject, string htmlMessage)
+        public Task SendEmailAsync(string email, string subject, string htmlMessage)
+        {
+            return SendEmailAsync(email, null, subject, htmlMessage);
+        }
+
+        public async Task SendEmailAsync(string recipientEmail, string replyToMail, string subject, string htmlMessage)
         {
             try
             {
@@ -35,7 +40,11 @@ namespace MyCourse.Models.Services.Infrastructure
 
                 var message = new MimeMessage();
                 message.From.Add(MailboxAddress.Parse(options.Sender));
-                message.To.Add(MailboxAddress.Parse(email));
+                message.To.Add(MailboxAddress.Parse(recipientEmail));
+                if(replyToMail is not (null or ""))
+                {
+                    message.ReplyTo.Add(MailboxAddress.Parse(replyToMail));
+                }
                 message.Subject = subject;
                 message.Body = new TextPart("html") { Text = htmlMessage };
                 await client.SendAsync(message);
@@ -43,7 +52,7 @@ namespace MyCourse.Models.Services.Infrastructure
             }
             catch (Exception exc)
             {
-                logger.LogError(exc, "Couldn't send email to {email} with message {message}", email, htmlMessage);
+                logger.LogError(exc, "Couldn't send email to {email} with message {message}", recipientEmail, htmlMessage);
             }
         }
     }

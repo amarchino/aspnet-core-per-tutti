@@ -11,8 +11,8 @@ namespace MyCourse.Pages
     [Authorize]
     public class ContactModel : PageModel
     {
-
         public CourseDetailViewModel Course { get; private set; }
+
         [Required(ErrorMessage = "Il testo della domanda è obbligatorio")]
         [BindProperty]
         public string Question { get; set; }
@@ -34,7 +34,7 @@ namespace MyCourse.Pages
         {
             if(ModelState.IsValid)
             {
-                // Invio la domanda al docente
+                await courseService.SendQuestionToCourseAuthorAsync(id, Question);
                 TempData["ConfirmationMessage"] = "La tua domanda è stata inviata";
                 return RedirectToAction("Detail", "Courses", new { id = id });
             }

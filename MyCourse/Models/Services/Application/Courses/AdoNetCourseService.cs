@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -26,9 +29,14 @@ namespace MyCourse.Models.Services.Application.Courses
         private readonly IOptionsMonitor<CoursesOptions> coursesOptions;
         private readonly ILogger<AdoNetCourseService> logger;
         private readonly IImagePersister imagePersister;
+        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IEmailClient emailClient;
 
-        public AdoNetCourseService(IDatabaseAccessor db, IOptionsMonitor<CoursesOptions> coursesOptions, ILogger<AdoNetCourseService> logger, IImagePersister imagePersister)
+        public AdoNetCourseService(IDatabaseAccessor db, IOptionsMonitor<CoursesOptions> coursesOptions, ILogger<AdoNetCourseService> logger, IImagePersister imagePersister, IHttpContextAccessor httpContextAccessor,
+            IEmailClient emailClient)
         {
+            this.emailClient = emailClient;
+            this.httpContextAccessor = httpContextAccessor;
             this.logger = logger;
             this.coursesOptions = coursesOptions;
             this.db = db;
@@ -194,6 +202,46 @@ namespace MyCourse.Models.Services.Application.Courses
             if (affectedRows == 0)
             {
                 throw new CourseNotFoundException(inputModel.Id);
+            }
+        }
+
+        public async Task SendQuestionToCourseAuthorAsync(int id, string question)
+        {
+            FormattableString query = $@"SELECT Title, Email FROM Courses WHERE Course.Id={id}";
+            DataSet dataSet = await db.QueryAsync(query);
+
+            if(dataSet.Tables[0].Rows.Count == 0)
+            {
+                logger.LogWarning("Course {id} not found", id);
+                throw new CourseNotFoundException(id);
+            }
+
+            string courseTitle = Convert.ToString(dataSet.Tables[0].Rows[0]["Title"]);
+            string courseEmail = Convert.ToString(dataSet.Tables[0].Rows[0]["Email"]);
+
+            string userFullName;
+            string userEmail;
+
+            try
+            {
+                userFullName = httpContextAccessor.HttpContext.User.FindFirst("FullName").Value;
+                userEmail = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Email).Value;
+            }
+            catch(NullReferenceException)
+            {
+                throw new UserUnknownException();
+            }
+
+            string subject = $@"Domanda per il tuo corso ""{courseTitle}""";
+            string message = $@"<p>L'utente {userFullName} (<a href=""{userEmail}"">{userEmail}</a>) ti ha inviato la seguente domanda:</p><p>{question}</p>";
+
+            try
+            {
+                await emailClient.SendEmailAsync(courseEmail, userEmail, subject, message);
+            }
+            catch
+            {
+                throw new SendException();
             }
         }
     }

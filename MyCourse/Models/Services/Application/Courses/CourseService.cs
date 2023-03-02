@@ -100,5 +100,10 @@ namespace MyCourse.Models.Services.Application.Courses
         {
             throw new NotImplementedException();
         }
+
+        public Task SendQuestionToCourseAuthorAsync(int id, string question)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -98,5 +98,10 @@ namespace MyCourse.Models.Services.Application.Courses
         {
             return courseService.DeleteCourseAsync(inputModel);
         }
+
+        public Task SendQuestionToCourseAuthorAsync(int id, string question)
+        {
+            return courseService.SendQuestionToCourseAuthorAsync(id, question);
+        }
     }
 }

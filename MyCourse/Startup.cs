@@ -92,6 +92,7 @@ namespace MyCourse
             services.AddTransient<ICachedLessonService, MemoryCacheLessonService>();
             services.AddTransient<IImagePersister, MagickNetImagePersister>();
             services.AddTransient<IEmailSender, MailKitEmailSender>();
+            services.AddTransient<IEmailClient, MailKitEmailSender>();
 
             // Options
             services.Configure<ConnectionStringsOptions>(configuration.GetSection("ConnectionStrings"));
