@@ -31,3 +31,5 @@ obj/
 
 *.db-shm
 *.db-wal
+
+/credentials

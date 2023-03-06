@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using AspNetCore.ReCaptcha;
 
 namespace MyCourse
 {
@@ -32,6 +33,7 @@ namespace MyCourse
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddReCaptcha(configuration.GetSection("ReCaptcha"));
             services.AddResponseCaching();
             services.AddRazorPages(options => {
                 options.Conventions.AllowAnonymousToPage("/Privacy");
