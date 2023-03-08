@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -14,7 +15,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using MyCourse.Models.Entities;
+using MyCourse.Models.Options;
 
 namespace MyCourse.Areas.Identity.Pages.Account
 {
@@ -26,17 +29,20 @@ namespace MyCourse.Areas.Identity.Pages.Account
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IOptionsMonitor<UsersOptions> _usersOptions;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IOptionsMonitor<UsersOptions> usersOptions)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _usersOptions = usersOptions;
         }
 
         [BindProperty]
@@ -87,6 +93,16 @@ namespace MyCourse.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
+
+                    if(user.Email.Equals(_usersOptions.CurrentValue.AssignAdministratorRoleOnRegistrator, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        Claim claim = new (ClaimTypes.Role, "Administrator");
+                        IdentityResult roleAssignmentResult = await _userManager.AddClaimAsync(user, claim);
+                        if(!roleAssignmentResult.Succeeded)
+                        {
+                            _logger.LogError("Could not assign the administrator role to the user");
+                        }
+                    }
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));

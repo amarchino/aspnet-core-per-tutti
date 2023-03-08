@@ -100,6 +100,7 @@ namespace MyCourse
             services.Configure<ConnectionStringsOptions>(configuration.GetSection("ConnectionStrings"));
             services.Configure<CoursesOptions>(configuration.GetSection("Courses"));
             services.Configure<SmtpOptions>(configuration.GetSection("Smtp"));
+            services.Configure<UsersOptions>(configuration.GetSection("Users"));
             // services.Configure<MemoryCacheOptions>(configuration.GetSection("MemoryCache"));
         }
 
