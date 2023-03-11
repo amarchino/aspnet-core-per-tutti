@@ -30,19 +30,22 @@ namespace MyCourse.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly IOptionsMonitor<UsersOptions> _usersOptions;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            IOptionsMonitor<UsersOptions> usersOptions)
+            IOptionsMonitor<UsersOptions> usersOptions,
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
             _usersOptions = usersOptions;
+            _roleManager = roleManager;
         }
 
         [BindProperty]
@@ -92,15 +95,25 @@ namespace MyCourse.Areas.Identity.Pages.Account
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
+                    var assignRoleNames = _usersOptions.CurrentValue.AssignRolesOnRegistration;
 
-                    if(user.Email.Equals(_usersOptions.CurrentValue.AssignAdministratorRoleOnRegistrator, StringComparison.InvariantCultureIgnoreCase))
+                    if(assignRoleNames.ContainsKey(Input.Email.ToLower()))
                     {
-                        Claim claim = new (ClaimTypes.Role, "Administrator");
-                        IdentityResult roleAssignmentResult = await _userManager.AddClaimAsync(user, claim);
-                        if(!roleAssignmentResult.Succeeded)
+                        foreach(var roleName in assignRoleNames[Input.Email.ToLower()])
                         {
-                            _logger.LogError("Could not assign the administrator role to the user");
+                            IdentityRole role = await _roleManager.FindByNameAsync(roleName);
+                            if(role == null)
+                            {
+                                role = new IdentityRole(roleName);
+                                await _roleManager.CreateAsync(role);
+                            }
+
+                            result = await _userManager.AddToRoleAsync(user, roleName);
+                            if(!result.Succeeded)
+                            {
+                                _logger.LogError($"Could not assign role {roleName} to user {Input.Email}");
+                                ModelState.AddModelError(string.Empty, $"Non è stato possibile assegnare il ruolo {roleName}");
+                            }
                         }
                     }
 

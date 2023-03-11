@@ -18,6 +18,7 @@ using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using AspNetCore.ReCaptcha;
+using Microsoft.AspNetCore.Identity;
 
 namespace MyCourse
 {
@@ -66,6 +67,8 @@ namespace MyCourse
                         options.Lockout.MaxFailedAccessAttempts = 5;
                         options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                     })
+                    .AddRoles<IdentityRole>()
+                    .AddRoleManager<RoleManager<IdentityRole>>()
                     .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>()
                     .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>();
 
@@ -73,7 +76,8 @@ namespace MyCourse
             switch(persistence)
             {
                 case Persistence.AdoNet:
-                    identityBuilder.AddUserStore<AdoNetUserStore>();
+                    identityBuilder.AddUserStore<AdoNetUserStore>()
+                    .AddRoleStore<AdoNetRoleStore>();
 
                     services.AddTransient<ICourseService, AdoNetCourseService>();
                     services.AddTransient<ILessonService, AdoNetLessonService>();

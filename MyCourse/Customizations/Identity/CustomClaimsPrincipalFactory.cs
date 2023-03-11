@@ -6,9 +6,9 @@ using MyCourse.Models.Entities;
 
 namespace MyCourse.Customizations.Identity
 {
-    public class CustomClaimsPrincipalFactory : UserClaimsPrincipalFactory<ApplicationUser>
+    public class CustomClaimsPrincipalFactory : UserClaimsPrincipalFactory<ApplicationUser, IdentityRole>
     {
-        public CustomClaimsPrincipalFactory(UserManager<ApplicationUser> userManager, IOptions<IdentityOptions> optionsAccessor) : base(userManager, optionsAccessor)
+        public CustomClaimsPrincipalFactory(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<IdentityOptions> optionsAccessor) : base(userManager, roleManager, optionsAccessor)
         {
         }
 
