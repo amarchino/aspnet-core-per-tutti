@@ -1,4 +1,4 @@
-namespace MyCourse.Models.Options
+namespace MyCourse.Models.Enums
 {
     public enum Persistence
     {

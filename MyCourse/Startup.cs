@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using AspNetCore.ReCaptcha;
 using Microsoft.AspNetCore.Identity;
+using MyCourse.Models.Enums;
 
 namespace MyCourse
 {
