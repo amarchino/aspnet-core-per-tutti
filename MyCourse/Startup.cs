@@ -48,11 +48,6 @@ namespace MyCourse
                 options.CacheProfiles.Add("Home", homeProfile);
 
                 options.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
-
-                AuthorizationPolicyBuilder policyBuilder = new();
-                AuthorizationPolicy policy = policyBuilder.RequireAuthenticatedUser().Build();
-                AuthorizeFilter filter = new(policy);
-                options.Filters.Add(filter);
             });
 
             services.Configure<KestrelServerOptions>(configuration.GetSection("Kestrel"));
@@ -75,9 +70,7 @@ namespace MyCourse
                     .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>();
 
             services.AddAuthorization(options => {
-                options.AddPolicy("CourseAuthor", builder => {
-                    builder.Requirements.Add(new CourseAuthorRequirement());
-                });
+                options.AddPolicy(nameof(Policy.CourseAuthor), builder => builder.Requirements.Add(new CourseAuthorRequirement()));
             });
 
             var persistence = Persistence.EfCore;
@@ -138,8 +131,10 @@ namespace MyCourse
 
             // Endpoint middleware
             app.UseEndpoints(routeBuilder => {
-                routeBuilder.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-                routeBuilder.MapRazorPages();
+                routeBuilder.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}")
+                    .RequireAuthorization();
+                routeBuilder.MapRazorPages()
+                    .RequireAuthorization();
             });
         }
     }
