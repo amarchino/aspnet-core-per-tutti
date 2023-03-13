@@ -105,5 +105,10 @@ namespace MyCourse.Models.Services.Application.Courses
         {
             throw new NotImplementedException();
         }
+
+        public Task<string> GetCourseAuthorIdAsync(int courseId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

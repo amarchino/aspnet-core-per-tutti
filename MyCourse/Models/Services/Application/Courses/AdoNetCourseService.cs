@@ -244,5 +244,10 @@ namespace MyCourse.Models.Services.Application.Courses
                 throw new SendException();
             }
         }
+
+        public Task<string> GetCourseAuthorIdAsync(int courseId)
+        {
+            return db.QueryScalarAsync<string>($"SELECT AuthorId FROM Courses WHERE Id={courseId}");
+        }
     }
 }

@@ -48,7 +48,7 @@ namespace MyCourse.Controllers
         public IActionResult Create()
         {
             ViewData["Title"] = "Nuovo corso";
-            var inputModel = new CourseCreateInputModel();
+            CourseCreateInputModel inputModel = new ();
             return View(inputModel);
         }
 

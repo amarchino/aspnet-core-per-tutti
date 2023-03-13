@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using AspNetCore.ReCaptcha;
 using Microsoft.AspNetCore.Identity;
 using MyCourse.Models.Enums;
+using MyCourse.Models.Authorization;
 
 namespace MyCourse
 {
@@ -73,6 +74,12 @@ namespace MyCourse
                     .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>()
                     .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>();
 
+            services.AddAuthorization(options => {
+                options.AddPolicy("CourseAuthor", builder => {
+                    builder.Requirements.Add(new CourseAuthorRequirement());
+                });
+            });
+
             var persistence = Persistence.EfCore;
             switch(persistence)
             {
@@ -100,6 +107,8 @@ namespace MyCourse
             services.AddTransient<IImagePersister, MagickNetImagePersister>();
             services.AddTransient<IEmailSender, MailKitEmailSender>();
             services.AddTransient<IEmailClient, MailKitEmailSender>();
+
+            services.AddScoped<IAuthorizationHandler, CourseAuthorRequirementHandler>();
 
             // Options
             services.Configure<ConnectionStringsOptions>(configuration.GetSection("ConnectionStrings"));

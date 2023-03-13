@@ -103,5 +103,15 @@ namespace MyCourse.Models.Services.Application.Courses
         {
             return courseService.SendQuestionToCourseAuthorAsync(id, question);
         }
+
+        public Task<string> GetCourseAuthorIdAsync(int courseId)
+        {
+            return memoryCache.GetOrCreateAsync($"CourseAuthor{courseId}", cacheEntry =>
+            {
+                cacheEntry.SetSize(1);
+                cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(coursesOptions.CurrentValue.CacheDuration));
+                return courseService.GetCourseAuthorIdAsync(courseId);
+            });
+        }
     }
 }
