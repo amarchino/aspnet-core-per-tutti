@@ -110,5 +110,10 @@ namespace MyCourse.Models.Services.Application.Courses
         {
             throw new NotImplementedException();
         }
+
+        public Task<int> GetCourseCountByAuthorIdAsync(string userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

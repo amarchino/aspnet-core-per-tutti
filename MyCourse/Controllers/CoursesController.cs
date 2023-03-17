@@ -4,12 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using MyCourse.Customizations.Authorization;
 using MyCourse.Models.Enums;
 using MyCourse.Models.Exceptions;
 using MyCourse.Models.Exceptions.Application;
 using MyCourse.Models.InputModels.Courses;
+using MyCourse.Models.Options;
 using MyCourse.Models.Services.Application.Courses;
+using MyCourse.Models.Services.Infrastructure;
 using MyCourse.Models.ViewModels;
 using MyCourse.Models.ViewModels.Courses;
 
@@ -19,6 +22,7 @@ namespace MyCourse.Controllers
     public class CoursesController : Controller
     {
         private readonly ICourseService courseService;
+
         public CoursesController(ICachedCourseService courseService)
         {
             this.courseService = courseService;
@@ -53,13 +57,26 @@ namespace MyCourse.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CourseCreateInputModel inputModel)
+        public async Task<IActionResult> Create(
+            CourseCreateInputModel inputModel,
+            [FromServices] IAuthorizationService authorizationService,
+            [FromServices] IEmailClient emailClient,
+            [FromServices] IOptionsMonitor<UsersOptions> usersOptions)
         {
             if(ModelState.IsValid)
             {
                 try
                 {
                     CourseDetailViewModel course = await courseService.CreateCourseAsync(inputModel);
+                    AuthorizationResult result = await authorizationService.AuthorizeAsync(User, nameof(Policy.CourseLimit));
+                    if(!result.Succeeded)
+                    {
+                        await emailClient.SendEmailAsync(
+                            usersOptions.CurrentValue.NotificationEmailRecipient,
+                            "Avviso superamento soglia",
+                            $"Il docente {User.Identity.Name} ha craeto molti corsi: verifica che riesca a gestirli tutti.");
+                    }
+
                     TempData["ConfirmationMessage"] = "Ok! Il tuo corso è stato creato, ora perché non inserisci anche gli altri dati?";
                     return RedirectToAction(nameof(Edit), new { id = course.Id });
                 }

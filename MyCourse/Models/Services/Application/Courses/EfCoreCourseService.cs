@@ -285,5 +285,12 @@ namespace MyCourse.Models.Services.Application.Courses
                 .Select(course => course.AuthorId)
                 .FirstOrDefaultAsync();
         }
+
+        public Task<int> GetCourseCountByAuthorIdAsync(string userId)
+        {
+            return dbContext.Courses
+                .Where(course => course.AuthorId == userId)
+                .CountAsync();
+        }
     }
 }

@@ -71,6 +71,7 @@ namespace MyCourse
 
             services.AddAuthorization(options => {
                 options.AddPolicy(nameof(Policy.CourseAuthor), builder => builder.Requirements.Add(new CourseAuthorRequirement()));
+                options.AddPolicy(nameof(Policy.CourseLimit), builder => builder.Requirements.Add(new CourseLimitRequirement(limit: 5)));
             });
 
             var persistence = Persistence.EfCore;

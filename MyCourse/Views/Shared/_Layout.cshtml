@@ -1,3 +1,10 @@
+@inject IAuthorizationService authService
+@{
+  AuthorizationPolicy policy = new AuthorizationPolicyBuilder().RequireRole(nameof(Role.Administrator)).Build();
+  AuthorizationResult authorizationResult = await authService.AuthorizeAsync(User, policy);
+  bool isAdmin = authorizationResult.Succeeded;
+}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,6 +37,12 @@
           <li class="nav-item">
             <a class="nav-link active" asp-action="Index" asp-controller="Courses">Catalogo corsi</a>
           </li>
+          @if(isAdmin)
+          {
+            <li class="nav-item">
+              <a class="nav-link active" asp-action="Users" asp-controller="Admin">Gestione Utenti</a>
+            </li>
+          }
         </ul>
         <partial name="_LoginPartial"></partial>
       </div>

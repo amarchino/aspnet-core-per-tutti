@@ -7,29 +7,22 @@ using MyCourse.Models.Services.Application.Courses;
 
 namespace MyCourse.Models.Authorization
 {
-    public class CourseAuthorRequirementHandler : AuthorizationHandler<CourseAuthorRequirement>
+    public class CourseLimitRequirementHandler : AuthorizationHandler<CourseLimitRequirement>
     {
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ICachedCourseService courseService;
 
-        public CourseAuthorRequirementHandler(IHttpContextAccessor httpContextAccessor, ICachedCourseService courseService)
+        public CourseLimitRequirementHandler(IHttpContextAccessor httpContextAccessor, ICachedCourseService courseService)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.courseService = courseService;
         }
 
-        protected async override Task HandleRequirementAsync(AuthorizationHandlerContext context, CourseAuthorRequirement requirement)
+        protected async override Task HandleRequirementAsync(AuthorizationHandlerContext context, CourseLimitRequirement requirement)
         {
             string userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            int courseId = context.Resource is int ? (int)context.Resource : Convert.ToInt32(httpContextAccessor.HttpContext.Request.RouteValues["id"]);
-            if(courseId == 0)
-            {
-                context.Fail();
-                return;
-            }
-            string authorId = await courseService.GetCourseAuthorIdAsync(courseId);
-
-            if(authorId == userId)
+            int courseCount = await courseService.GetCourseCountByAuthorIdAsync(userId);
+            if(courseCount <= requirement.Limit)
             {
                 context.Succeed(requirement);
                 return;
