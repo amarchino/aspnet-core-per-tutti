@@ -52,6 +52,19 @@ namespace MyCourse.Models.Services.Infrastructure
                     .WithMany(user => user.AuthoredCourses)
                     .HasForeignKey(course => course.AuthorId);
 
+                entity.HasMany(course => course.SubscribedUsers)
+                    .WithMany(user => user.SubscribedCourses)
+                    .UsingEntity<Subscription>(
+                        entity => entity.HasOne(subscription => subscription.User).WithMany().HasForeignKey(subscription => subscription.UserId),
+                        entity => entity.HasOne(subscription => subscription.Course).WithMany().HasForeignKey(subscription => subscription.CourseId),
+                        entity => {
+                            entity.ToTable("Subscriptions");
+                            entity.OwnsOne(subscription => subscription.Paid, builder => {
+                                builder.Property(money => money.Currency).HasConversion<string>();
+                                builder.Property(money => money.Amount).HasConversion<float>();
+                            });
+                        });
+
                 entity.HasQueryFilter(course => course.Status != CourseStatus.Deleted);
             });
 

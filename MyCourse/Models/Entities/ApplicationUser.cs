@@ -12,6 +12,7 @@ namespace MyCourse.Models.Entities
         public string FullName { get; set; }
 
         public virtual ICollection<Course> AuthoredCourses { get; private set; }
+        public virtual ICollection<Course> SubscribedCourses { get; private set; }
 
         public static ApplicationUser FromDataRow(DataRow userRow)
         {

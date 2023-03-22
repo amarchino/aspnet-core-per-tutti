@@ -32,6 +32,7 @@ namespace MyCourse.Models.Entities
 
         public virtual ICollection<Lesson> Lessons { get; private set; }
         public virtual ApplicationUser AuthorUser { get; private set; }
+        public virtual ICollection<ApplicationUser> SubscribedUsers { get; private set; }
 
         public void ChangeTitle(string newTitle)
         {
