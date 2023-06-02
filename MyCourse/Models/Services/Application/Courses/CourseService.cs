@@ -115,5 +115,15 @@ namespace MyCourse.Models.Services.Application.Courses
         {
             throw new NotImplementedException();
         }
+
+        public Task SubscribeCourseAsync(CourseSubscribeInputModel inputModel)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> IsCourseSubscribedAsync(int courseId, string userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
