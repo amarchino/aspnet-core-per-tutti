@@ -50,12 +50,6 @@ namespace MyCourse.Models.Authorization
                         return;
                 }
             }
-            int courseId = context.Resource is int ? (int)context.Resource : Convert.ToInt32(httpContextAccessor.HttpContext.Request.RouteValues["id"]);
-            if(courseId == 0)
-            {
-                context.Fail();
-                return;
-            }
             string authorId = await courseService.GetCourseAuthorIdAsync(courseId);
 
             if(authorId == userId)
