@@ -8,20 +8,20 @@ using MyCourse.Models.Services.Application.Lessons;
 
 namespace MyCourse.Models.Authorization
 {
-    public class CourseAuthorRequirementHandler : AuthorizationHandler<CourseAuthorRequirement>
+    public class CourseSubscriberRequirementHandler : AuthorizationHandler<CourseSubscriberRequirement>
     {
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ICachedCourseService courseService;
         private readonly ILessonService lessonService;
 
-        public CourseAuthorRequirementHandler(IHttpContextAccessor httpContextAccessor, ICachedCourseService courseService, ILessonService lessonService)
+        public CourseSubscriberRequirementHandler(IHttpContextAccessor httpContextAccessor, ICachedCourseService courseService, ILessonService lessonService)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.courseService = courseService;
             this.lessonService = lessonService;
         }
 
-        protected async override Task HandleRequirementAsync(AuthorizationHandlerContext context, CourseAuthorRequirement requirement)
+        protected async override Task HandleRequirementAsync(AuthorizationHandlerContext context, CourseSubscriberRequirement requirement)
         {
             string userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
             int courseId;
@@ -37,6 +37,7 @@ namespace MyCourse.Models.Authorization
                     context.Fail();
                     return;
                 }
+                // A quale controller sto cercando di accedere?
                 switch(httpContextAccessor.HttpContext.Request.RouteValues["controller"].ToString().ToLowerInvariant())
                 {
                     case "lessons":
@@ -50,20 +51,15 @@ namespace MyCourse.Models.Authorization
                         return;
                 }
             }
-            int courseId = context.Resource is int ? (int)context.Resource : Convert.ToInt32(httpContextAccessor.HttpContext.Request.RouteValues["id"]);
-            if(courseId == 0)
-            {
-                context.Fail();
-                return;
-            }
-            string authorId = await courseService.GetCourseAuthorIdAsync(courseId);
-
-            if(authorId == userId)
+            bool isSubscribed = await courseService.IsCourseSubscribedAsync(courseId, userId);
+            if(isSubscribed)
             {
                 context.Succeed(requirement);
-                return;
             }
-            context.Fail();
+            else
+            {
+                context.Fail();
+            }
         }
     }
 }

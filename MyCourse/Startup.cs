@@ -21,6 +21,7 @@ using AspNetCore.ReCaptcha;
 using Microsoft.AspNetCore.Identity;
 using MyCourse.Models.Enums;
 using MyCourse.Models.Authorization;
+using MyCourse.Customizations.Authorization;
 
 namespace MyCourse
 {
@@ -72,6 +73,7 @@ namespace MyCourse
             services.AddAuthorization(options => {
                 options.AddPolicy(nameof(Policy.CourseAuthor), builder => builder.Requirements.Add(new CourseAuthorRequirement()));
                 options.AddPolicy(nameof(Policy.CourseLimit), builder => builder.Requirements.Add(new CourseLimitRequirement(limit: 5)));
+                options.AddPolicy(nameof(Policy.CourseSubscriber), builder => builder.Requirements.Add(new CourseSubscriberRequirement()));
             });
 
             var persistence = Persistence.EfCore;
@@ -103,6 +105,10 @@ namespace MyCourse
             services.AddTransient<IEmailClient, MailKitEmailSender>();
 
             services.AddScoped<IAuthorizationHandler, CourseAuthorRequirementHandler>();
+            services.AddScoped<IAuthorizationHandler, CourseLimitRequirementHandler>();
+            services.AddScoped<IAuthorizationHandler, CourseSubscriberRequirementHandler>();
+
+            services.AddSingleton<IAuthorizationPolicyProvider, MultiAuthorizationPolicyProvider>();
 
             // Options
             services.Configure<ConnectionStringsOptions>(configuration.GetSection("ConnectionStrings"));

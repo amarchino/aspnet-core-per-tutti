@@ -13,8 +13,7 @@ using MyCourse.Models.ViewModels.Lessons;
 
 namespace MyCourse.Controllers
 {
-    [AuthorizeRole(Role.Teacher)]
-    [Authorize(Policy = nameof(Policy.CourseAuthor))]
+
     public class LessonsController : Controller
     {
         private readonly ICachedLessonService lessonService;
@@ -23,6 +22,7 @@ namespace MyCourse.Controllers
             this.lessonService = lessonService;
         }
 
+        [Authorize(Policy = nameof(Policy.CourseAuthor) + "," + nameof(Policy.CourseSubscriber))]
         public async Task<IActionResult> Detail(int id)
         {
             LessonDetailViewModel viewModel = await lessonService.GetLessonAsync(id);
@@ -30,6 +30,8 @@ namespace MyCourse.Controllers
             return View(viewModel);
         }
 
+        [AuthorizeRole(Role.Teacher)]
+        [Authorize(Policy = nameof(Policy.CourseAuthor))]
         public IActionResult Create(int id)
         {
             ViewData["Title"] = "Nuova lesione";
@@ -39,6 +41,8 @@ namespace MyCourse.Controllers
         }
 
         [HttpPost]
+        [AuthorizeRole(Role.Teacher)]
+        [Authorize(Policy = nameof(Policy.CourseAuthor))]
         public async Task<IActionResult> Create(LessonCreateInputModel inputModel)
         {
             if(ModelState.IsValid)
@@ -52,6 +56,8 @@ namespace MyCourse.Controllers
             return View(inputModel);
         }
 
+        [AuthorizeRole(Role.Teacher)]
+        [Authorize(Policy = nameof(Policy.CourseAuthor))]
         public async Task<IActionResult> Edit(int id)
         {
             ViewData["Title"] = "Modifica lezione";
@@ -60,6 +66,8 @@ namespace MyCourse.Controllers
         }
 
         [HttpPost]
+        [AuthorizeRole(Role.Teacher)]
+        [Authorize(Policy = nameof(Policy.CourseAuthor))]
         public async Task<IActionResult> Edit(LessonEditInputModel inputModel)
         {
             if(ModelState.IsValid)
@@ -81,6 +89,8 @@ namespace MyCourse.Controllers
         }
 
         [HttpPost]
+        [AuthorizeRole(Role.Teacher)]
+        [Authorize(Policy = nameof(Policy.CourseAuthor))]
         public async Task<IActionResult> Delete(LessonDeleteInputModel inputModel)
         {
             await lessonService.DeleteLessonAsync(inputModel);
