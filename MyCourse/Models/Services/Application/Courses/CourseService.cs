@@ -125,5 +125,15 @@ namespace MyCourse.Models.Services.Application.Courses
         {
             throw new NotImplementedException();
         }
+
+        public Task<string> GetPaymentUrlAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public CourseSubscribeInputModel CapturePaymentAsync(int id, string token)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

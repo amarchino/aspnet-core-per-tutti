@@ -1,16 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MyCourse.Models.Enums;
-using MyCourse.Models.Exceptions;
 using MyCourse.Models.Exceptions.Application;
 using MyCourse.Models.Exceptions.Infrastructure;
 using MyCourse.Models.InputModels.Courses;
@@ -270,6 +267,16 @@ namespace MyCourse.Models.Services.Application.Courses
         public Task<bool> IsCourseSubscribedAsync(int courseId, string userId)
         {
             return db.QueryScalarAsync<bool>($"SELECT COUNT(*) FROM Subscriptions WHERE CourseId={courseId} AND UserId={userId}");
+        }
+
+        public Task<string> GetPaymentUrlAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public CourseSubscribeInputModel CapturePaymentAsync(int id, string token)
+        {
+            throw new NotImplementedException();
         }
     }
 }

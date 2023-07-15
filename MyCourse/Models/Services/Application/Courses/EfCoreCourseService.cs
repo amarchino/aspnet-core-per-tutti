@@ -5,12 +5,10 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Ganss.XSS;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MyCourse.Models.Entities;
-using MyCourse.Models.Exceptions;
 using MyCourse.Models.Exceptions.Application;
 using MyCourse.Models.Exceptions.Infrastructure;
 using MyCourse.Models.InputModels.Courses;
@@ -318,6 +316,16 @@ namespace MyCourse.Models.Services.Application.Courses
             return dbContext.Subscriptions
                 .Where(subscription => subscription.CourseId == courseId && subscription.UserId == userId)
                 .AnyAsync();
+        }
+
+        public Task<string> GetPaymentUrlAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public CourseSubscribeInputModel CapturePaymentAsync(int id, string token)
+        {
+            throw new NotImplementedException();
         }
     }
 }
