@@ -115,6 +115,7 @@ namespace MyCourse
             services.Configure<CoursesOptions>(configuration.GetSection("Courses"));
             services.Configure<SmtpOptions>(configuration.GetSection("Smtp"));
             services.Configure<UsersOptions>(configuration.GetSection("Users"));
+            services.Configure<PaypalOptions>(configuration.GetSection("Paypal"));
             // services.Configure<MemoryCacheOptions>(configuration.GetSection("MemoryCache"));
         }
 
