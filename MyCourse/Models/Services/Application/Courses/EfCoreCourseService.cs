@@ -5,9 +5,11 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Ganss.XSS;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using MyCourse.Controllers;
 using MyCourse.Models.Entities;
 using MyCourse.Models.Exceptions.Application;
 using MyCourse.Models.Exceptions.Infrastructure;
@@ -27,19 +29,25 @@ namespace MyCourse.Models.Services.Application.Courses
         private readonly IImagePersister imagePersister;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IEmailClient emailClient;
+        private readonly IPaymentGateway paymentGateway;
+        private readonly LinkGenerator linkGenerator;
 
         public EfCoreCourseService(
             MyCourseDbContext dbContext,
             IOptionsMonitor<CoursesOptions> coursesOptions,
             IImagePersister imagePersister,
             IHttpContextAccessor httpContextAccessor,
-            IEmailClient emailClient)
+            IEmailClient emailClient,
+            IPaymentGateway paymentGateway,
+            LinkGenerator linkGenerator)
         {
             this.coursesOptions = coursesOptions;
             this.dbContext = dbContext;
             this.imagePersister = imagePersister;
             this.httpContextAccessor = httpContextAccessor;
             this.emailClient = emailClient;
+            this.paymentGateway = paymentGateway;
+            this.linkGenerator = linkGenerator;
         }
 
         public async Task<CourseDetailViewModel> GetCourseAsync(int id)
@@ -318,9 +326,29 @@ namespace MyCourse.Models.Services.Application.Courses
                 .AnyAsync();
         }
 
-        public Task<string> GetPaymentUrlAsync(int id)
+        public async Task<string> GetPaymentUrlAsync(int courseId)
         {
-            throw new NotImplementedException();
+            CourseDetailViewModel viewModel = await GetCourseAsync(courseId);
+            CoursePayInputModel inputModel = new()
+            {
+                CourseId = courseId,
+                UserId = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier),
+                Description = viewModel.Description,
+                Price = viewModel.CurrentPrice,
+                ReturnUrl = linkGenerator.GetUriByAction(
+                    httpContextAccessor.HttpContext,
+                    action: nameof(CoursesController.Subscribe),
+                    controller: "Courses",
+                    values: new { id = courseId }
+                ),
+                CancelUrl = linkGenerator.GetUriByAction(
+                    httpContextAccessor.HttpContext,
+                    action: nameof(CoursesController.Detail),
+                    controller: "Courses",
+                    values: new { id = courseId }
+                )
+            };
+            return await paymentGateway.GetPaymentUrlAsync(inputModel);
         }
 
         public CourseSubscribeInputModel CapturePaymentAsync(int id, string token)

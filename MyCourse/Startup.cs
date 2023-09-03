@@ -104,6 +104,8 @@ namespace MyCourse
             services.AddTransient<IEmailSender, MailKitEmailSender>();
             services.AddTransient<IEmailClient, MailKitEmailSender>();
 
+            services.AddTransient<IPaymentGateway, PaypalPaymentGateway>();
+
             services.AddScoped<IAuthorizationHandler, CourseAuthorRequirementHandler>();
             services.AddScoped<IAuthorizationHandler, CourseLimitRequirementHandler>();
             services.AddScoped<IAuthorizationHandler, CourseSubscriberRequirementHandler>();
