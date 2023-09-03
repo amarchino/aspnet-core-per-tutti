@@ -49,7 +49,7 @@ namespace MyCourse.Controllers
 
         public async Task<IActionResult> Subscribe(int id, string token)
         {
-            CourseSubscribeInputModel inputModel = courseService.CapturePaymentAsync(id, token);
+            CourseSubscribeInputModel inputModel = await courseService.CapturePaymentAsync(id, token);
             await courseService.SubscribeCourseAsync(inputModel);
             TempData["ConfirmationMessage"] = "Grazie per esserti iscritto, guarda subito la prima lezione!";
             return RedirectToAction(nameof(Detail), new { id = id });

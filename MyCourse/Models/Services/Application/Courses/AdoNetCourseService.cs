@@ -300,9 +300,9 @@ namespace MyCourse.Models.Services.Application.Courses
             return await paymentGateway.GetPaymentUrlAsync(inputModel);
         }
 
-        public CourseSubscribeInputModel CapturePaymentAsync(int id, string token)
+        public Task<CourseSubscribeInputModel> CapturePaymentAsync(int id, string token)
         {
-            throw new NotImplementedException();
+            return paymentGateway.CapturePaymentAsync(token);
         }
     }
 }

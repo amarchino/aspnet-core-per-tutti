@@ -134,7 +134,7 @@ namespace MyCourse.Models.Services.Application.Courses
             return courseService.GetPaymentUrlAsync(id);
         }
 
-        public CourseSubscribeInputModel CapturePaymentAsync(int id, string token)
+        public Task<CourseSubscribeInputModel> CapturePaymentAsync(int id, string token)
         {
             return courseService.CapturePaymentAsync(id, token);
         }

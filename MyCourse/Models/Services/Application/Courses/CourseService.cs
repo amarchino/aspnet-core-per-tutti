@@ -131,7 +131,7 @@ namespace MyCourse.Models.Services.Application.Courses
             throw new NotImplementedException();
         }
 
-        public CourseSubscribeInputModel CapturePaymentAsync(int id, string token)
+        public Task<CourseSubscribeInputModel> CapturePaymentAsync(int id, string token)
         {
             throw new NotImplementedException();
         }
