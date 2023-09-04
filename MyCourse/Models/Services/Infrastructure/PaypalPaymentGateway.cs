@@ -76,7 +76,7 @@ namespace MyCourse.Models.Services.Infrastructure
                         new PurchaseUnitRequest()
                         {
                             CustomId = $"{inputModel.CourseId}/{inputModel.UserId}",
-                            Description = inputModel.Description.Substring(0, 100),
+                            Description = inputModel.Title,
                             AmountWithBreakdown = new AmountWithBreakdown()
                             {
                                 CurrencyCode = inputModel.Price.Currency.ToString(),

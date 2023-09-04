@@ -333,6 +333,7 @@ namespace MyCourse.Models.Services.Application.Courses
             {
                 CourseId = courseId,
                 UserId = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier),
+                Title = viewModel.Title,
                 Description = viewModel.Description,
                 Price = viewModel.CurrentPrice,
                 ReturnUrl = linkGenerator.GetUriByAction(
