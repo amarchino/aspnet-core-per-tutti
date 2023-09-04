@@ -104,7 +104,8 @@ namespace MyCourse
             services.AddTransient<IEmailSender, MailKitEmailSender>();
             services.AddTransient<IEmailClient, MailKitEmailSender>();
 
-            services.AddTransient<IPaymentGateway, PaypalPaymentGateway>();
+            // services.AddTransient<IPaymentGateway, PaypalPaymentGateway>();
+            services.AddTransient<IPaymentGateway, StripePaymentGateway>();
 
             services.AddScoped<IAuthorizationHandler, CourseAuthorRequirementHandler>();
             services.AddScoped<IAuthorizationHandler, CourseLimitRequirementHandler>();
@@ -118,6 +119,7 @@ namespace MyCourse
             services.Configure<SmtpOptions>(configuration.GetSection("Smtp"));
             services.Configure<UsersOptions>(configuration.GetSection("Users"));
             services.Configure<PaypalOptions>(configuration.GetSection("Paypal"));
+            services.Configure<StripeOptions>(configuration.GetSection("Stripe"));
             // services.Configure<MemoryCacheOptions>(configuration.GetSection("MemoryCache"));
         }
 
