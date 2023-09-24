@@ -66,9 +66,21 @@ namespace MyCourse.Models.Services.Infrastructure
 
         private async Task<SqliteConnection> GetOpenedConnection(CancellationToken token)
         {
-            var conn = new SqliteConnection(connectionStringsOptions.CurrentValue.Default);
-            await conn.OpenAsync(token);
-            return conn;
+            int retries = 3;
+            while(true)
+            {
+                try
+                {
+                    retries--;
+                    var conn = new SqliteConnection(connectionStringsOptions.CurrentValue.Default);
+                    await conn.OpenAsync(token);
+                    return conn;
+                }
+                catch(Exception) when (retries > 0)
+                {
+                    await Task.Delay(1000);
+                }
+            }
         }
 
         public async Task<int> CommandAsync(FormattableString formattableCommand, CancellationToken token = default(CancellationToken))

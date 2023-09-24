@@ -94,7 +94,9 @@ namespace MyCourse
                     services.AddTransient<ILessonService, EfCoreLessonService>();
                     services.AddDbContextPool<MyCourseDbContext>(optionsBuilder => {
                         string connectionString = configuration["ConnectionStrings:Default"];
-                        optionsBuilder.UseSqlite(connectionString);
+                        optionsBuilder.UseSqlite(connectionString, options => {
+                            // options.EnableRetryOnFailure(3);
+                        });
                     });
                     break;
             }
@@ -112,6 +114,7 @@ namespace MyCourse
             services.AddScoped<IAuthorizationHandler, CourseSubscriberRequirementHandler>();
 
             services.AddSingleton<IAuthorizationPolicyProvider, MultiAuthorizationPolicyProvider>();
+            services.AddSingleton<ITransactionLogger, LocalTransactionLogger>();
 
             // Options
             services.Configure<ConnectionStringsOptions>(configuration.GetSection("ConnectionStrings"));

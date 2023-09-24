@@ -31,6 +31,7 @@ namespace MyCourse.Models.Services.Application.Courses
         private readonly IEmailClient emailClient;
         private readonly IPaymentGateway paymentGateway;
         private readonly LinkGenerator linkGenerator;
+        private readonly ITransactionLogger transactionLogger;
 
         public EfCoreCourseService(
             MyCourseDbContext dbContext,
@@ -39,7 +40,8 @@ namespace MyCourse.Models.Services.Application.Courses
             IHttpContextAccessor httpContextAccessor,
             IEmailClient emailClient,
             IPaymentGateway paymentGateway,
-            LinkGenerator linkGenerator)
+            LinkGenerator linkGenerator,
+            ITransactionLogger transactionLogger)
         {
             this.coursesOptions = coursesOptions;
             this.dbContext = dbContext;
@@ -48,6 +50,7 @@ namespace MyCourse.Models.Services.Application.Courses
             this.emailClient = emailClient;
             this.paymentGateway = paymentGateway;
             this.linkGenerator = linkGenerator;
+            this.transactionLogger = transactionLogger;
         }
 
         public async Task<CourseDetailViewModel> GetCourseAsync(int id)
@@ -316,6 +319,10 @@ namespace MyCourse.Models.Services.Application.Courses
             catch (DbUpdateException)
             {
                 throw new CourseSubscriptionException(inputModel.CourseId);
+            }
+            catch(Exception)
+            {
+                await transactionLogger.LogTransactionAsync(inputModel);
             }
         }
 
