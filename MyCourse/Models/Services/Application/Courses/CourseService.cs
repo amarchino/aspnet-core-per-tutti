@@ -135,5 +135,15 @@ namespace MyCourse.Models.Services.Application.Courses
         {
             throw new NotImplementedException();
         }
+
+        public Task<int?> GetCourseVoteAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task VoteCourseAsync(CourseVoteInputModel inputModel)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

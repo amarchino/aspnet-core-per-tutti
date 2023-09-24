@@ -311,5 +311,15 @@ namespace MyCourse.Models.Services.Application.Courses
         {
             return paymentGateway.CapturePaymentAsync(token);
         }
+
+        public Task<int?> GetCourseVoteAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task VoteCourseAsync(CourseVoteInputModel inputModel)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
