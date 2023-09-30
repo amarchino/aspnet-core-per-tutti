@@ -176,7 +176,7 @@ namespace MyCourse.Controllers
 
         [HttpPost]
         [Authorize(Policy = nameof(Policy.CourseSubscriber))]
-        public async Task<IActionResult> Voute(CourseVoteInputModel inputModel)
+        public async Task<IActionResult> Vote(CourseVoteInputModel inputModel)
         {
             await courseService.VoteCourseAsync(inputModel);
             TempData["ConfirmationMessage"] = "Grazie per aver votato.";

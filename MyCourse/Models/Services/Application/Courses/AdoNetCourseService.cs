@@ -312,14 +312,26 @@ namespace MyCourse.Models.Services.Application.Courses
             return paymentGateway.CapturePaymentAsync(token);
         }
 
-        public Task<int?> GetCourseVoteAsync(int id)
+        public async Task<int?> GetCourseVoteAsync(int courseId)
         {
-            throw new NotImplementedException();
+            string userId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            string vote = await db.QueryScalarAsync<string>($"SELECT Vote FROM Subscriptions WHERE CourseId={courseId} AND UserId={userId}");
+            return string.IsNullOrEmpty(vote) ? null : Convert.ToInt32(vote);
         }
 
-        public Task VoteCourseAsync(CourseVoteInputModel inputModel)
+        public async Task VoteCourseAsync(CourseVoteInputModel inputModel)
         {
-            throw new NotImplementedException();
+            if (inputModel.Vote < 1 || inputModel.Vote > 5)
+            {
+                throw new InvalidVoteException(inputModel.Vote);
+            }
+
+            string userId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            int updatedRows = await db.CommandAsync($"UPDATE Subscriptions SET Vote={inputModel.Vote} WHERE CourseId={inputModel.Id} AND UserId={userId}");
+            if (updatedRows == 0)
+            {
+                throw new CourseSubscriptionNotFoundException(inputModel.Id);
+            }
         }
     }
 }
