@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Ganss.XSS;
+using Ganss.Xss;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Data.Sqlite;
@@ -273,7 +273,7 @@ namespace MyCourse.Models.Services.Application.Courses
             }
 
             // Sanitizzo la domanda dell'utente
-            question = new HtmlSanitizer(allowedTags: new string[0]).Sanitize(question);
+            question = new HtmlSanitizer(new HtmlSanitizerOptions { AllowedTags = new HashSet<string>() }).Sanitize(question);
 
             string subject = $@"Domanda per il tuo corso ""{course.Title}""";
             string message = $@"<p>L'utente {userFullName} (<a href=""{userEmail}"">{userEmail}</a>) ti ha inviato la seguente domanda:</p><p>{question}</p>";

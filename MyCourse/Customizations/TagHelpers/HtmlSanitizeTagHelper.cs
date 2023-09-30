@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Ganss.XSS;
+using Ganss.Xss;
 using AngleSharp.Html.Dom;
 
 namespace MyCourse.Customizations.TagHelpers
