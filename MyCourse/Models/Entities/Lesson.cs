@@ -3,12 +3,12 @@ public partial class Lesson
 {
     public int Id { get; private set; }
     public int CourseId { get; private set; }
-    public string Title { get; private set; }
-    public string Description { get; private set; }
+    public string Title { get; private set; } = "";
+    public string? Description { get; private set; }
     public int Order { get; private set; }
     public TimeSpan Duration { get; private set; }
-    public string RowVersion { get; private set; }
-    public virtual Course Course { get; set; }
+    public string RowVersion { get; private set; } = "";
+    public virtual Course? Course { get; set; }
 
     public Lesson(string title, int courseId)
     {

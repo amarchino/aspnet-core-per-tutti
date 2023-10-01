@@ -11,24 +11,25 @@ public partial class Course
         ChangeAuthor(author, authorId);
         ImagePath = "/Courses/default.png";
         Lessons = new HashSet<Lesson>();
-        ChangeStatus(CourseStatus.Draft);
+        SubscribedUsers = new HashSet<ApplicationUser>();
+        Status = CourseStatus.Draft;
     }
 
     public int Id { get; private set; }
-    public string Title { get; private set; }
-    public string Description { get; private set; }
+    public string Title { get; private set; } = "";
+    public string? Description { get; private set; }
     public string ImagePath { get; private set; }
-    public string Author { get; private set; }
-    public string Email { get; private set; }
+    public string Author { get; private set; } = "";
+    public string? Email { get; private set; }
     public double Rating { get; private set; }
-    public Money FullPrice { get; private set; }
-    public Money CurrentPrice { get; private set; }
-    public string RowVersion { get; private set; }
+    public Money? FullPrice { get; private set; }
+    public Money? CurrentPrice { get; private set; }
+    public string? RowVersion { get; private set; }
     public CourseStatus Status { get; private set; }
-    public string AuthorId { get; private set; }
+    public string AuthorId { get; private set; } = "";
 
     public virtual ICollection<Lesson> Lessons { get; private set; }
-    public virtual ApplicationUser AuthorUser { get; private set; }
+    public virtual ApplicationUser? AuthorUser { get; private set; }
     public virtual ICollection<ApplicationUser> SubscribedUsers { get; private set; }
 
     public void ChangeTitle(string newTitle)
