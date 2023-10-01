@@ -8,14 +8,12 @@ using Microsoft.Extensions.DependencyInjection;
 using MyCourse.Models.Services.Infrastructure;
 
 [assembly: HostingStartup(typeof(MyCourse.Areas.Identity.IdentityHostingStartup))]
-namespace MyCourse.Areas.Identity
+namespace MyCourse.Areas.Identity;
+public class IdentityHostingStartup : IHostingStartup
 {
-    public class IdentityHostingStartup : IHostingStartup
+    public void Configure(IWebHostBuilder builder)
     {
-        public void Configure(IWebHostBuilder builder)
-        {
-            builder.ConfigureServices((context, services) => {
-            });
-        }
+        builder.ConfigureServices((context, services) => {
+        });
     }
 }

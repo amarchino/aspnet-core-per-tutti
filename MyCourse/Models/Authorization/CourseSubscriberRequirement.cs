@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 
-namespace MyCourse.Models.Authorization
+namespace MyCourse.Models.Authorization;
+public class CourseSubscriberRequirement : IAuthorizationRequirement
 {
-    public class CourseSubscriberRequirement : IAuthorizationRequirement
-    {
-
-    }
 }

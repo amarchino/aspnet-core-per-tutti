@@ -1,13 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MyCourse.Models.InputModels.Courses;
 
-namespace MyCourse.Models.Services.Infrastructure
+namespace MyCourse.Models.Services.Infrastructure;
+public interface ITransactionLogger
 {
-    public interface ITransactionLogger
-    {
-        Task LogTransactionAsync(CourseSubscribeInputModel inputModel);
-    }
+    Task LogTransactionAsync(CourseSubscribeInputModel inputModel);
 }

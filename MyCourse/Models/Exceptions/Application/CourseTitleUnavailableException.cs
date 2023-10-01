@@ -1,14 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace MyCourse.Models.Exceptions.Application
+namespace MyCourse.Models.Exceptions.Application;
+public class CourseTitleUnavailableException : Exception
 {
-    public class CourseTitleUnavailableException : Exception
+    public CourseTitleUnavailableException(string title, Exception innerException) : base($"Course title '{title}' existed", innerException)
     {
-        public CourseTitleUnavailableException(string title, Exception innerException) : base($"Course title '{title}' existed", innerException)
-        {
-        }
     }
 }

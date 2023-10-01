@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using MyCourse.Models.Enums;
 using MyCourse.Models.InputModels.Courses;
@@ -9,47 +5,46 @@ using MyCourse.Models.Options;
 using Stripe;
 using Stripe.Checkout;
 
-namespace MyCourse.Models.Services.Infrastructure
+namespace MyCourse.Models.Services.Infrastructure;
+public class StripePaymentGateway : IPaymentGateway
 {
-    public class StripePaymentGateway : IPaymentGateway
+    private readonly IOptionsMonitor<StripeOptions> options;
+
+    public StripePaymentGateway(IOptionsMonitor<StripeOptions> options)
     {
-        private readonly IOptionsMonitor<StripeOptions> options;
+        this.options = options;
+    }
 
-        public StripePaymentGateway(IOptionsMonitor<StripeOptions> options)
+    public async Task<CourseSubscribeInputModel> CapturePaymentAsync(string token)
+    {
+        RequestOptions requestOptions = new()
         {
-            this.options = options;
-        }
+            ApiKey = options.CurrentValue.PrivateKey
+        };
+        SessionService sessionService = new();
+        Session session = await sessionService.GetAsync(token, requestOptions: requestOptions);
 
-        public async Task<CourseSubscribeInputModel> CapturePaymentAsync(string token)
+        PaymentIntentService paymentIntentService = new();
+        PaymentIntent paymentIntent = await paymentIntentService.CaptureAsync(session.PaymentIntentId, requestOptions: requestOptions);
+        string[] customIdParts = session.ClientReferenceId.Split('/');
+
+        return new()
         {
-            RequestOptions requestOptions = new()
-            {
-                ApiKey = options.CurrentValue.PrivateKey
-            };
-            SessionService sessionService = new();
-            Session session = await sessionService.GetAsync(token, requestOptions: requestOptions);
+            CourseId = int.Parse(customIdParts[0]),
+            UserId = customIdParts[1],
+            Paid = new(Enum.Parse<Currency>(paymentIntent.Currency, ignoreCase: true), paymentIntent.Amount / 100m),
+            TransactionId = paymentIntent.Id,
+            PaymentDate = paymentIntent.Created,
+            PaymentType = "Stripe"
+        };
+    }
 
-            PaymentIntentService paymentIntentService = new();
-            PaymentIntent paymentIntent = await paymentIntentService.CaptureAsync(session.PaymentIntentId, requestOptions: requestOptions);
-            string[] customIdParts = session.ClientReferenceId.Split('/');
-
-            return new()
-            {
-                CourseId = int.Parse(customIdParts[0]),
-                UserId = customIdParts[1],
-                Paid = new(Enum.Parse<Currency>(paymentIntent.Currency, ignoreCase: true), paymentIntent.Amount / 100m),
-                TransactionId = paymentIntent.Id,
-                PaymentDate = paymentIntent.Created,
-                PaymentType = "Stripe"
-            };
-        }
-
-        public async Task<string> GetPaymentUrlAsync(CoursePayInputModel inputModel)
+    public async Task<string> GetPaymentUrlAsync(CoursePayInputModel inputModel)
+    {
+        SessionCreateOptions sessionCreateOptions = new()
         {
-            SessionCreateOptions sessionCreateOptions = new()
-            {
-                ClientReferenceId = $"{inputModel.CourseId}/{inputModel.UserId}",
-                LineItems = new List<SessionLineItemOptions>
+            ClientReferenceId = $"{inputModel.CourseId}/{inputModel.UserId}",
+            LineItems = new List<SessionLineItemOptions>
                 {
                     new SessionLineItemOptions()
                     {
@@ -66,26 +61,25 @@ namespace MyCourse.Models.Services.Infrastructure
                         }
                     }
                 },
-                Mode = "payment",
-                PaymentIntentData = new SessionPaymentIntentDataOptions
-                {
-                    CaptureMethod = "manual"
-                },
-                PaymentMethodTypes = new List<string>
+            Mode = "payment",
+            PaymentIntentData = new SessionPaymentIntentDataOptions
+            {
+                CaptureMethod = "manual"
+            },
+            PaymentMethodTypes = new List<string>
                 {
                     "card"
                 },
-                SuccessUrl = inputModel.ReturnUrl + "?token={CHECKOUT_SESSION_ID}",
-                CancelUrl = inputModel.CancelUrl
-            };
+            SuccessUrl = inputModel.ReturnUrl + "?token={CHECKOUT_SESSION_ID}",
+            CancelUrl = inputModel.CancelUrl
+        };
 
-            RequestOptions requestOptions = new()
-            {
-                ApiKey = options.CurrentValue.PrivateKey
-            };
-            SessionService sessionService = new();
-            Session session = await sessionService.CreateAsync(sessionCreateOptions, requestOptions);
-            return session.Url;
-        }
+        RequestOptions requestOptions = new()
+        {
+            ApiKey = options.CurrentValue.PrivateKey
+        };
+        SessionService sessionService = new();
+        Session session = await sessionService.CreateAsync(sessionCreateOptions, requestOptions);
+        return session.Url;
     }
 }
