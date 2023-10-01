@@ -127,11 +127,14 @@ namespace MyCourse
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(WebApplication app)
         {
+            IWebHostEnvironment env = app.Environment;
+
             if (env.IsEnvironment("Development"))
             {
-                app.UseDeveloperExceptionPage();
+                // Aggiunta automaticamente da .NET6
+                // app.UseDeveloperExceptionPage();
             }
             else
             {
@@ -145,12 +148,8 @@ namespace MyCourse
             app.UseResponseCaching();
 
             // Endpoint middleware
-            app.UseEndpoints(routeBuilder => {
-                routeBuilder.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}")
-                    .RequireAuthorization();
-                routeBuilder.MapRazorPages()
-                    .RequireAuthorization();
-            });
+            app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}").RequireAuthorization();
+            app.MapRazorPages().RequireAuthorization();
         }
     }
 }

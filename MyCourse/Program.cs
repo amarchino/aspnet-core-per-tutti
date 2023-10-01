@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.AspNetCore.Builder;
 
 namespace MyCourse
 {
@@ -7,13 +6,18 @@ namespace MyCourse
     {
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+            Startup startup = new (builder.Configuration);
+
+            // Aggiungere i servizi per la dependency injection (metodo ConfigureServices)
+            startup.ConfigureServices(builder.Services);
+
+            WebApplication app = builder.Build();
+            // Usiamo i middleware (metodo Configure)
+            startup.Configure(app);
+
+            app.Run();
         }
 
-        public static IHostBuilder CreateWebHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webHostBuilder => {
-                    webHostBuilder.UseStartup<Startup>();
-                });
     }
 }
