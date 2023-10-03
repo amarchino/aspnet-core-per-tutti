@@ -58,7 +58,7 @@ public class AdoNetCourseService : ICourseService
         var lessonDataTable = dataSet.Tables[1];
         foreach (DataRow lessonRow in lessonDataTable.Rows)
         {
-            courseDetailViewModel.Lessons.Add(LessonViewModel.fromDataRow(lessonRow));
+            courseDetailViewModel.Lessons.Add(LessonViewModel.FromDataRow(lessonRow));
         }
         return courseDetailViewModel;
     }
@@ -165,7 +165,7 @@ public class AdoNetCourseService : ICourseService
     {
         try
         {
-            string imagePath = null;
+            string? imagePath = null;
             if (inputModel.Image != null)
             {
                 imagePath = await imagePersister.SaveCourseImageAsync(inputModel.Id, inputModel.Image);
@@ -214,16 +214,16 @@ public class AdoNetCourseService : ICourseService
             throw new CourseNotFoundException(id);
         }
 
-        string courseTitle = Convert.ToString(dataSet.Tables[0].Rows[0]["Title"]);
-        string courseEmail = Convert.ToString(dataSet.Tables[0].Rows[0]["Email"]);
+        string courseTitle = Convert.ToString(dataSet.Tables[0].Rows[0]["Title"])!;
+        string courseEmail = Convert.ToString(dataSet.Tables[0].Rows[0]["Email"])!;
 
         string userFullName;
         string userEmail;
 
         try
         {
-            userFullName = httpContextAccessor.HttpContext.User.FindFirst("FullName").Value;
-            userEmail = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Email).Value;
+            userFullName = httpContextAccessor.HttpContext!.User.FindFirst("FullName")!.Value;
+            userEmail = httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.Email)!.Value;
         }
         catch (NullReferenceException)
         {
@@ -280,22 +280,22 @@ public class AdoNetCourseService : ICourseService
         CoursePayInputModel inputModel = new()
         {
             CourseId = courseId,
-            UserId = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier),
+            UserId = httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!,
             Title = viewModel.Title,
             Description = viewModel.Description,
             Price = viewModel.CurrentPrice,
             ReturnUrl = linkGenerator.GetUriByAction(
-                httpContextAccessor.HttpContext,
+                httpContextAccessor.HttpContext!,
                 action: nameof(CoursesController.Subscribe),
                 controller: "Courses",
                 values: new { id = courseId }
-            ),
+            )!,
             CancelUrl = linkGenerator.GetUriByAction(
-                httpContextAccessor.HttpContext,
+                httpContextAccessor.HttpContext!,
                 action: nameof(CoursesController.Detail),
                 controller: "Courses",
                 values: new { id = courseId }
-            )
+            )!
         };
         return await paymentGateway.GetPaymentUrlAsync(inputModel);
     }
@@ -307,7 +307,7 @@ public class AdoNetCourseService : ICourseService
 
     public async Task<int?> GetCourseVoteAsync(int courseId)
     {
-        string userId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+        string userId = httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
         string vote = await db.QueryScalarAsync<string>($"SELECT Vote FROM Subscriptions WHERE CourseId={courseId} AND UserId={userId}");
         return string.IsNullOrEmpty(vote) ? null : Convert.ToInt32(vote);
     }
@@ -319,7 +319,7 @@ public class AdoNetCourseService : ICourseService
             throw new InvalidVoteException(inputModel.Vote);
         }
 
-        string userId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+        string userId = httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
         int updatedRows = await db.CommandAsync($"UPDATE Subscriptions SET Vote={inputModel.Vote} WHERE CourseId={inputModel.Id} AND UserId={userId}");
         if (updatedRows == 0)
         {

@@ -12,5 +12,5 @@ public class CourseCreateInputModel
     RegularExpression(@"^[\w\s\.]+$", ErrorMessage = "Titolo non valido"),
     NotNull(ErrorMessage = "Il titolo non deve essere null"),
     Remote(action: nameof(CoursesController.IsTitleAvailable), controller: "Courses", ErrorMessage = "Il titolo esiste già")]
-    public string Title { get; set; }
+    public string Title { get; set; } = "";
 }

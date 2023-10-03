@@ -63,7 +63,7 @@ public class AdoNetUserStore :
         DataSet dataSet = await db.QueryAsync($"SELECT * FROM AspNetUsers WHERE Id={userId}", cancellationToken);
         if (dataSet.Tables[0].Rows.Count == 0)
         {
-            return null;
+            return new();
         }
         return ApplicationUser.FromDataRow(dataSet.Tables[0].Rows[0]);
     }
@@ -73,7 +73,7 @@ public class AdoNetUserStore :
         DataSet dataSet = await db.QueryAsync($"SELECT * FROM AspNetUsers WHERE NormalizedUserName={normalizedUserName}", cancellationToken);
         if (dataSet.Tables[0].Rows.Count == 0)
         {
-            return null;
+            return new();
         }
         return ApplicationUser.FromDataRow(dataSet.Tables[0].Rows[0]);
     }
@@ -139,7 +139,7 @@ public class AdoNetUserStore :
     public async Task<IList<string>> GetRolesAsync(ApplicationUser user, CancellationToken token)
     {
         DataSet dataSet = await db.QueryAsync($"SELECT AspNetRoles.Name FROM AspNetUsers INNER JOIN AspNetUserRoles ON AspNetUsers.Id=AspNetUserRoles.UserId INNER JOIN AspNetRoles ON AspNetUserRoles.RoleId=AspNetRoles.Id WHERE AspNetUsers.Id={user.Id}", token);
-        return dataSet.Tables[0].AsEnumerable().Select(row => Convert.ToString(row["Name"])).ToList();
+        return dataSet.Tables[0].AsEnumerable().Select(row => Convert.ToString(row["Name"])).ToList()!;
     }
 
     public async Task<bool> IsInRoleAsync(ApplicationUser user, string roleName, CancellationToken token)
@@ -159,8 +159,8 @@ public class AdoNetUserStore :
     {
         DataSet dataSet = await db.QueryAsync($"SELECT * FROM AspNetUserClaims WHERE UserId={user.Id}", token);
         List<Claim> claims = dataSet.Tables[0].AsEnumerable().Select(row => new Claim(
-            type: Convert.ToString(row["ClaimType"]),
-            value: Convert.ToString(row["ClaimValue"])
+            type: Convert.ToString(row["ClaimType"])!,
+            value: Convert.ToString(row["ClaimValue"])!
         )).ToList();
         return claims;
     }
@@ -209,7 +209,7 @@ public class AdoNetUserStore :
         DataSet dataSet = await db.QueryAsync($"SELECT * FROM AspNetUsers WHERE NormalizedEmail={normalizedEmail}", token);
         if (dataSet.Tables[0].Rows.Count == 0)
         {
-            return null;
+            return new();
         }
         return ApplicationUser.FromDataRow(dataSet.Tables[0].Rows[0]);
     }
@@ -425,7 +425,7 @@ public class AdoNetUserStore :
         DataSet dataSet = await db.QueryAsync($"SELECT AspNetUsers.* FROM AspNetUsers LEFT JOIN AspNetUserLogins ON AspNetUsers.Id=AspNetUserLogins.UserId WHERE LoginProvider={loginProvider} AND ProviderKey={providerKey}", token);
         if (dataSet.Tables[0].Rows.Count == 0)
         {
-            return null;
+            return new();
         }
         return ApplicationUser.FromDataRow(dataSet.Tables[0].Rows[0]);
     }

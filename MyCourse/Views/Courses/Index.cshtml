@@ -9,7 +9,7 @@
   <div class="col-md-4 d-flex align-items-center">
     <form asp-controller="Courses" asp-action="Index" method="GET">
       <div class="input-group">
-        <input type="text" class="form-control" name="search" placeholder="Cerca..." aria-label="Cerca..." aria-describedby="search-button" value="@Model.Input.Search">
+        <input type="text" class="form-control" name="search" placeholder="Cerca..." aria-label="Cerca..." aria-describedby="search-button" value="@Model.Input!.Search">
         <div class="input-group-append">
           <button class="input-group-text" id="search-button"><i class="fas fa-search"></i></button>
         </div>

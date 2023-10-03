@@ -47,7 +47,7 @@ public class EfCoreCourseService : ICourseService
 
     public async Task<CourseDetailViewModel> GetCourseAsync(int id)
     {
-        CourseDetailViewModel viewModel = await dbContext.Courses
+        CourseDetailViewModel viewModel = await dbContext.Courses!
             .AsNoTracking()
             .Where(course => course.Id == id)
             .Select(course => new CourseDetailViewModel
@@ -57,9 +57,9 @@ public class EfCoreCourseService : ICourseService
                 ImagePath = course.ImagePath,
                 Author = course.Author,
                 Rating = course.Rating,
-                CurrentPrice = course.CurrentPrice,
-                FullPrice = course.FullPrice,
-                Description = course.Description,
+                CurrentPrice = course.CurrentPrice!,
+                FullPrice = course.FullPrice!,
+                Description = course.Description!,
                 Lessons = course.Lessons.Select(lesson => LessonViewModel.FromEntity(lesson)).ToList()
             }).SingleAsync();
 
@@ -68,7 +68,7 @@ public class EfCoreCourseService : ICourseService
 
     public async Task<ListViewModel<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
     {
-        IQueryable<Course> baseQuery = dbContext.Courses;
+        IQueryable<Course> baseQuery = dbContext.Courses!;
         switch (model.OrderBy)
         {
             case "Id":
@@ -81,7 +81,7 @@ public class EfCoreCourseService : ICourseService
                 baseQuery = model.Ascending ? baseQuery.OrderBy(course => course.Rating) : baseQuery.OrderByDescending(course => course.Rating);
                 break;
             case "CurrentPrice":
-                baseQuery = model.Ascending ? baseQuery.OrderBy(course => course.CurrentPrice.Amount) : baseQuery.OrderByDescending(course => course.CurrentPrice.Amount);
+                baseQuery = model.Ascending ? baseQuery.OrderBy(course => course.CurrentPrice!.Amount) : baseQuery.OrderByDescending(course => course.CurrentPrice!.Amount);
                 break;
         }
 
@@ -95,8 +95,8 @@ public class EfCoreCourseService : ICourseService
                 ImagePath = course.ImagePath,
                 Author = course.Author,
                 Rating = course.Rating,
-                CurrentPrice = course.CurrentPrice,
-                FullPrice = course.FullPrice
+                CurrentPrice = course.CurrentPrice!,
+                FullPrice = course.FullPrice!
             })
             ;
         List<CourseViewModel> courses = await queryLinq
@@ -142,15 +142,15 @@ public class EfCoreCourseService : ICourseService
         string authorId;
         try
         {
-            author = httpContextAccessor.HttpContext.User.FindFirst("FullName").Value;
-            authorId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            author = httpContextAccessor.HttpContext!.User.FindFirst("FullName")!.Value;
+            authorId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
         }
         catch (NullReferenceException)
         {
             throw new UserUnknownException();
         }
         var entity = new Course(inputModel.Title, author, authorId);
-        dbContext.Courses.Add(entity);
+        dbContext.Courses!.Add(entity);
 
         try
         {
@@ -166,7 +166,7 @@ public class EfCoreCourseService : ICourseService
 
     public async Task<bool> IsTitleAvailableAsync(string title, int id)
     {
-        bool titleExists = await dbContext.Courses
+        bool titleExists = await dbContext.Courses!
             .Where(course => course.Id != id)
             .AnyAsync(course => EF.Functions.Like(course.Title, title));
         return !titleExists;
@@ -174,7 +174,7 @@ public class EfCoreCourseService : ICourseService
 
     public async Task<CourseEditInputModel> GetCourseForEditingAsync(int id)
     {
-        CourseEditInputModel viewModel = await dbContext.Courses
+        CourseEditInputModel viewModel = await dbContext.Courses!
             .AsNoTracking()
             .Where(course => course.Id == id)
             .Select(course => new CourseEditInputModel
@@ -183,9 +183,9 @@ public class EfCoreCourseService : ICourseService
                 Title = course.Title,
                 Description = course.Description,
                 ImagePath = course.ImagePath,
-                Email = course.Email,
-                FullPrice = course.FullPrice,
-                CurrentPrice = course.CurrentPrice,
+                Email = course.Email!,
+                FullPrice = course.FullPrice!,
+                CurrentPrice = course.CurrentPrice!,
                 RowVersion = course.RowVersion
             }).SingleAsync();
 
@@ -194,10 +194,10 @@ public class EfCoreCourseService : ICourseService
 
     public async Task<CourseDetailViewModel> EditCourseAsync(CourseEditInputModel inputModel)
     {
-        Course course = await dbContext.Courses.FindAsync(inputModel.Id);
-        course.ChangeTitle(inputModel.Title);
+        Course? course = await dbContext.Courses!.FindAsync(inputModel.Id);
+        course!.ChangeTitle(inputModel.Title);
         course.ChangePrices(inputModel.FullPrice, inputModel.CurrentPrice);
-        course.changeDescription(inputModel.Description);
+        course.changeDescription(inputModel.Description!);
         course.changeEmail(inputModel.Email);
         // dbContext.Courses.Update(entity);
 
@@ -234,30 +234,21 @@ public class EfCoreCourseService : ICourseService
 
     public async Task DeleteCourseAsync(CourseDeleteInputModel inputModel)
     {
-        Course course = await dbContext.Courses.FindAsync(inputModel.Id);
-        if (course == null)
-        {
-            throw new CourseNotFoundException(inputModel.Id);
-        }
+        Course course = await dbContext.Courses!.FindAsync(inputModel.Id) ?? throw new CourseNotFoundException(inputModel.Id);
         course.ChangeStatus(Enums.CourseStatus.Deleted);
         await dbContext.SaveChangesAsync();
     }
 
     public async Task SendQuestionToCourseAuthorAsync(int id, string question)
     {
-        Course course = await dbContext.Courses.FindAsync(id);
-        if (course == null)
-        {
-            throw new CourseNotFoundException(id);
-        }
-
+        Course course = await dbContext.Courses!.FindAsync(id) ?? throw new CourseNotFoundException(id);
         string userFullName;
         string userEmail;
 
         try
         {
-            userFullName = httpContextAccessor.HttpContext.User.FindFirst("FullName").Value;
-            userEmail = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Email).Value;
+            userFullName = httpContextAccessor.HttpContext!.User.FindFirst("FullName")!.Value;
+            userEmail = httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.Email)!.Value;
         }
         catch (NullReferenceException)
         {
@@ -271,7 +262,7 @@ public class EfCoreCourseService : ICourseService
         string message = $@"<p>L'utente {userFullName} (<a href=""{userEmail}"">{userEmail}</a>) ti ha inviato la seguente domanda:</p><p>{question}</p>";
         try
         {
-            await emailClient.SendEmailAsync(course.Email, userEmail, subject, message);
+            await emailClient.SendEmailAsync(course.Email!, userEmail, subject, message);
         }
         catch
         {
@@ -281,15 +272,15 @@ public class EfCoreCourseService : ICourseService
 
     public Task<string> GetCourseAuthorIdAsync(int courseId)
     {
-        return dbContext.Courses
+        return dbContext.Courses!
             .Where(course => course.Id == courseId)
             .Select(course => course.AuthorId)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync()!;
     }
 
     public Task<int> GetCourseCountByAuthorIdAsync(string userId)
     {
-        return dbContext.Courses
+        return dbContext.Courses!
             .Where(course => course.AuthorId == userId)
             .CountAsync();
     }
@@ -303,7 +294,7 @@ public class EfCoreCourseService : ICourseService
             Paid = inputModel.Paid,
             TransactionId = inputModel.TransactionId
         };
-        dbContext.Subscriptions.Add(subscription);
+        dbContext.Subscriptions!.Add(subscription);
         try
         {
             await dbContext.SaveChangesAsync();
@@ -320,7 +311,7 @@ public class EfCoreCourseService : ICourseService
 
     public Task<bool> IsCourseSubscribedAsync(int courseId, string userId)
     {
-        return dbContext.Subscriptions
+        return dbContext.Subscriptions!
             .Where(subscription => subscription.CourseId == courseId && subscription.UserId == userId)
             .AnyAsync();
     }
@@ -331,7 +322,7 @@ public class EfCoreCourseService : ICourseService
         CoursePayInputModel inputModel = new()
         {
             CourseId = courseId,
-            UserId = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier),
+            UserId = httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier),
             Title = viewModel.Title,
             Description = viewModel.Description,
             Price = viewModel.CurrentPrice,
@@ -340,13 +331,13 @@ public class EfCoreCourseService : ICourseService
                 action: nameof(CoursesController.Subscribe),
                 controller: "Courses",
                 values: new { id = courseId }
-            ),
+            )!,
             CancelUrl = linkGenerator.GetUriByAction(
                 httpContextAccessor.HttpContext,
                 action: nameof(CoursesController.Detail),
                 controller: "Courses",
                 values: new { id = courseId }
-            )
+            )!
         };
         return await paymentGateway.GetPaymentUrlAsync(inputModel);
     }
@@ -358,12 +349,8 @@ public class EfCoreCourseService : ICourseService
 
     public async Task<int?> GetCourseVoteAsync(int courseId)
     {
-        string userId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-        Subscription subscription = await dbContext.Subscriptions.SingleOrDefaultAsync(subscription => subscription.CourseId == courseId && subscription.UserId == userId);
-        if (subscription == null)
-        {
-            throw new CourseSubscriptionNotFoundException(courseId);
-        }
+        string userId = httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+        Subscription subscription = await dbContext.Subscriptions!.SingleOrDefaultAsync(subscription => subscription.CourseId == courseId && subscription.UserId == userId) ?? throw new CourseSubscriptionNotFoundException(courseId);
         return subscription.Vote;
     }
 
@@ -373,12 +360,8 @@ public class EfCoreCourseService : ICourseService
         {
             throw new InvalidVoteException(inputModel.Vote);
         }
-        string userId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-        Subscription subscription = await dbContext.Subscriptions.SingleOrDefaultAsync(subscription => subscription.CourseId == inputModel.Id && subscription.UserId == userId);
-        if (subscription == null)
-        {
-            throw new CourseSubscriptionNotFoundException(inputModel.Id);
-        }
+        string userId = httpContextAccessor.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+        Subscription subscription = await dbContext.Subscriptions!.SingleOrDefaultAsync(subscription => subscription.CourseId == inputModel.Id && subscription.UserId == userId) ?? throw new CourseSubscriptionNotFoundException(inputModel.Id);
         subscription.Vote = inputModel.Vote;
         await dbContext.SaveChangesAsync();
     }

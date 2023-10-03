@@ -4,12 +4,12 @@
 <form method="post">
   <div class="row">
     <div class="col-4">
-      <label asp-for="Input.Email"></label>
-      <input type="text" asp-for="Input.Email" class="form-control" placeholder="Email">
+      <label asp-for="Input!.Email"></label>
+      <input type="text" asp-for="Input!.Email" class="form-control" placeholder="Email">
     </div>
     <div class="col-4">
-      <label asp-for="Input.Role"></label>
-      <select class="form-control" asp-for="Input.Role" asp-items="@Html.GetEnumSelectList<Role>()">
+      <label asp-for="Input!.Role"></label>
+      <select class="form-control" asp-for="Input!.Role" asp-items="@Html.GetEnumSelectList<Role>()">
 
       </select>
     </div>

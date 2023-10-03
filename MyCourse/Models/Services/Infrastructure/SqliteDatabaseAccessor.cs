@@ -96,7 +96,7 @@ public class SqliteDatabaseAccessor : IDatabaseAccessor
     {
         using SqliteConnection conn = await GetOpenedConnection(token);
         using SqliteCommand cmd = GetCommand(formattableQuery, conn);
-        object result = await cmd.ExecuteScalarAsync(token);
-        return (T)Convert.ChangeType(result, typeof(T));
+        object? result = await cmd.ExecuteScalarAsync(token);
+        return (T)Convert.ChangeType(result, typeof(T))!;
     }
 }

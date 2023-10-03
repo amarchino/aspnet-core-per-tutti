@@ -1,5 +1,4 @@
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -7,40 +6,37 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using MyCourse.Models.Entities;
 
-namespace MyCourse.Areas.Identity.Pages.Account
+namespace MyCourse.Areas.Identity.Pages.Account;
+
+[AllowAnonymous]
+public class ConfirmEmailModel : PageModel
 {
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    [AllowAnonymous]
-    public class ConfirmEmailModel : PageModel
+    public ConfirmEmailModel(UserManager<ApplicationUser> userManager)
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        _userManager = userManager;
+    }
 
-        public ConfirmEmailModel(UserManager<ApplicationUser> userManager)
+    [TempData]
+    public string StatusMessage { get; set; } = "";
+
+    public async Task<IActionResult> OnGetAsync(string userId, string code)
+    {
+        if (userId == null || code == null)
         {
-            _userManager = userManager;
+            return RedirectToPage("/Index");
         }
 
-        [TempData]
-        public string StatusMessage { get; set; }
-
-        public async Task<IActionResult> OnGetAsync(string userId, string code)
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
         {
-            if (userId == null || code == null)
-            {
-                return RedirectToPage("/Index");
-            }
-
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return NotFound($"Non è stato possibile trovare il profilo utente con ID '{userId}'.");
-            }
-
-            code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
-            var result = await _userManager.ConfirmEmailAsync(user, code);
-            StatusMessage = result.Succeeded ? "Grazie per aver confermato l'email, ora puoi accedere." : "Errore nella conferma dell'email.";
-            return Page();
+            return NotFound($"Non è stato possibile trovare il profilo utente con ID '{userId}'.");
         }
+
+        code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+        var result = await _userManager.ConfirmEmailAsync(user, code);
+        StatusMessage = result.Succeeded ? "Grazie per aver confermato l'email, ora puoi accedere." : "Errore nella conferma dell'email.";
+        return Page();
     }
 }
-

@@ -1,12 +1,7 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
 using MyCourse.Customizations.Authorization;
 using MyCourse.Models.Entities;
 using MyCourse.Models.Enums;
@@ -21,8 +16,8 @@ namespace MyCourse.Pages.Admin
         private readonly UserManager<ApplicationUser> userManager;
 
         [BindProperty]
-        public UserRoleInputModel Input { get; set; }
-        public IList<ApplicationUser> Users { get; private set; }
+        public UserRoleInputModel? Input { get; set; }
+        public IList<ApplicationUser> Users { get; private set; } = new List<ApplicationUser>();
         [BindProperty(SupportsGet = true)]
         public Role InRole { get; set; }
 
@@ -46,7 +41,7 @@ namespace MyCourse.Pages.Admin
             {
                 return await OnGet();
             }
-            ApplicationUser user = await userManager.FindByEmailAsync(Input.Email);
+            ApplicationUser user = await userManager.FindByEmailAsync(Input!.Email);
             if(user == null)
             {
                 ModelState.AddModelError(nameof(Input.Email), $"L'indirizzo email {Input.Email} non corrisponde a nessun utente");
@@ -77,7 +72,7 @@ namespace MyCourse.Pages.Admin
             {
                 return await OnGet();
             }
-            ApplicationUser user = await userManager.FindByEmailAsync(Input.Email);
+            ApplicationUser user = await userManager.FindByEmailAsync(Input!.Email);
             if(user == null)
             {
                 ModelState.AddModelError(nameof(Input.Email), $"L'indirizzo email {Input.Email} non corrisponde a nessun utente");

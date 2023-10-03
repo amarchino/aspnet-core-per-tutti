@@ -12,14 +12,14 @@ public class MailKitEmailSender : IEmailClient
     public MailKitEmailSender(IOptionsMonitor<SmtpOptions> emailOptions, ILogger<MailKitEmailSender> logger)
     {
         this.logger = logger;
-        this.smtpOptions = emailOptions;
+        smtpOptions = emailOptions;
     }
     public Task SendEmailAsync(string email, string subject, string htmlMessage)
     {
         return SendEmailAsync(email, null, subject, htmlMessage);
     }
 
-    public async Task SendEmailAsync(string recipientEmail, string replyToMail, string subject, string htmlMessage)
+    public async Task SendEmailAsync(string recipientEmail, string? replyToMail, string subject, string htmlMessage)
     {
         try
         {

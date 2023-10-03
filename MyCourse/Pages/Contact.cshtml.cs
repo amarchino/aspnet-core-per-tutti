@@ -13,11 +13,11 @@ namespace MyCourse.Pages
     [ValidateReCaptcha]
     public class ContactModel : PageModel
     {
-        public CourseDetailViewModel Course { get; private set; }
+        public CourseDetailViewModel? Course { get; private set; }
 
         [Required(ErrorMessage = "Il testo della domanda è obbligatorio")]
         [BindProperty]
-        public string Question { get; set; }
+        public string Question { get; set; } = "";
 
         public async Task<IActionResult> OnGetAsync(int id, [FromServices] ICourseService courseService)
         {

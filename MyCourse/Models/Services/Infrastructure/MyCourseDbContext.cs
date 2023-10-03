@@ -12,9 +12,9 @@ public partial class MyCourseDbContext : IdentityDbContext<ApplicationUser>
     {
     }
 
-    public virtual DbSet<Course> Courses { get; set; }
-    public virtual DbSet<Lesson> Lessons { get; set; }
-    public virtual DbSet<Subscription> Subscriptions { get; set; }
+    public virtual DbSet<Course>? Courses { get; set; }
+    public virtual DbSet<Lesson>? Lessons { get; set; }
+    public virtual DbSet<Subscription>? Subscriptions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

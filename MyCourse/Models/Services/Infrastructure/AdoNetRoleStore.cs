@@ -50,7 +50,7 @@ public class AdoNetRoleStore :
         DataSet dataSet = await db.QueryAsync($"SELECT Id, Name, NormalizedName, ConcurrencyStamp FROM AspNetRoles WHERE Id={roleId}", token);
         if (dataSet.Tables[0].Rows.Count == 0)
         {
-            return null;
+            return NullRole();
         }
 
         return IdentityRoleFromDataRow(dataSet.Tables[0].Rows[0]);
@@ -61,7 +61,7 @@ public class AdoNetRoleStore :
         DataSet dataSet = await db.QueryAsync($"SELECT Id, Name, NormalizedName, ConcurrencyStamp FROM AspNetRoles WHERE NormalizedName={normalizedRoleName}", token);
         if (dataSet.Tables[0].Rows.Count == 0)
         {
-            return null;
+            return NullRole();
         }
 
         return IdentityRoleFromDataRow(dataSet.Tables[0].Rows[0]);
@@ -139,6 +139,11 @@ public class AdoNetRoleStore :
 
     #endregion
 
+    private static IdentityRole NullRole()
+    {
+        return new();
+    }
+
     private static IdentityRole IdentityRoleFromDataRow(DataRow role)
     {
         return new()
@@ -152,6 +157,6 @@ public class AdoNetRoleStore :
 
     private static Claim ClaimFromDataRow(DataRow claim)
     {
-        return new(type: Convert.ToString(claim["ClaimType"]), value: Convert.ToString(claim["ClaimValue"]));
+        return new(type: Convert.ToString(claim["ClaimType"])!, value: Convert.ToString(claim["ClaimValue"])!);
     }
 }

@@ -5,16 +5,16 @@ namespace MyCourse.Models.ViewModels.Lessons;
 public class LessonViewModel
 {
     public int Id { get; set; }
-    public string Title { get; set; }
+    public string Title { get; set; } = "";
     public TimeSpan Duration { get; set; }
 
-    public static LessonViewModel fromDataRow(DataRow lessonRow)
+    public static LessonViewModel FromDataRow(DataRow lessonRow)
     {
         return new LessonViewModel
         {
             Id = Convert.ToInt32(lessonRow["Id"]),
-            Title = Convert.ToString(lessonRow["Title"]),
-            Duration = TimeSpan.Parse(Convert.ToString(lessonRow["Duration"]))
+            Title = Convert.ToString(lessonRow["Title"])!,
+            Duration = TimeSpan.Parse(Convert.ToString(lessonRow["Duration"])!)
         };
     }
 

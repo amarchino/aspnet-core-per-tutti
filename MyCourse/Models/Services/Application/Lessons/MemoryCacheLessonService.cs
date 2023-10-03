@@ -24,7 +24,7 @@ public class MemoryCacheLessonService : ICachedLessonService
             cacheEntry.SetSize(1);
             cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(coursesOptions.CurrentValue.CacheDuration));
             return lessonService.GetLessonAsync(id);
-        });
+        })!;
     }
 
     public async Task<LessonDetailViewModel> CreateLessonAsync(LessonCreateInputModel inputModel)

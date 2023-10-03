@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using System.Threading.Tasks;
 using MyCourse.Models.Entities;
 
 namespace MyCourse.Areas.Identity.Pages.Account
@@ -26,21 +25,21 @@ namespace MyCourse.Areas.Identity.Pages.Account
         }
 
         [BindProperty]
-        public InputModel Input { get; set; }
+        public InputModel? Input { get; set; }
 
         public class InputModel
         {
             [Required(ErrorMessage = "L'email è obbligatoria")]
             [EmailAddress(ErrorMessage = "Deve essere un indirizzo email valido")]
-            public string Email { get; set; }
+            public string Email { get; set; } = "";
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
             if (ModelState.IsValid)
             {
-                var user = await _userManager.FindByEmailAsync(Input.Email);
-                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                var user = await _userManager.FindByEmailAsync(Input!.Email);
+                if (user == null || !await _userManager.IsEmailConfirmedAsync(user))
                 {
                     // Don't reveal that the user does not exist or is not confirmed
                     return RedirectToPage("./ForgotPasswordConfirmation");
@@ -59,7 +58,7 @@ namespace MyCourse.Areas.Identity.Pages.Account
                 await _emailSender.SendEmailAsync(
                     Input.Email,
                     "Reimposta password",
-                    $"Per favore, reimposta la password <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>cliccando questo link</a>.");
+                    $"Per favore, reimposta la password <a href='{HtmlEncoder.Default.Encode(callbackUrl!)}'>cliccando questo link</a>.");
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }

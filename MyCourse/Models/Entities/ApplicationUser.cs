@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Identity;
 namespace MyCourse.Models.Entities;
 public class ApplicationUser : IdentityUser
 {
-    public string? FullName { get; set; }
+    public string FullName { get; set; } = "";
 
-    public virtual ICollection<Course>? AuthoredCourses { get; private set; }
-    public virtual ICollection<Course>? SubscribedCourses { get; private set; }
+    public virtual ICollection<Course> AuthoredCourses { get; private set; } = new List<Course>();
+    public virtual ICollection<Course> SubscribedCourses { get; private set; } = new List<Course>();
 
     public static ApplicationUser FromDataRow(DataRow userRow)
     {
@@ -28,7 +28,7 @@ public class ApplicationUser : IdentityUser
             LockoutEnd = userRow["LockoutEnd"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(userRow["LockoutEnd"]),
             LockoutEnabled = Convert.ToBoolean(userRow["LockoutEnabled"]),
             AccessFailedCount = Convert.ToInt32(userRow["AccessFailedCount"]),
-            FullName = Convert.ToString(userRow["FullName"])
+            FullName = Convert.ToString(userRow["FullName"])!
         };
     }
 }

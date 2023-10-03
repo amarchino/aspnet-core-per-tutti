@@ -25,7 +25,7 @@ public class MemoryCacheCourseService : ICachedCourseService
             cacheEntry.SetSize(1);
             cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(coursesOptions.CurrentValue.CacheDuration));
             return courseService.GetCourseAsync(id);
-        });
+        })!;
     }
 
     public Task<ListViewModel<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
@@ -41,7 +41,7 @@ public class MemoryCacheCourseService : ICachedCourseService
                 cacheEntry.SetSize(2);
                 cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(coursesOptions.CurrentValue.CacheDuration));
                 return courseService.GetCoursesAsync(model);
-            });
+            })!;
         }
         // Altrimenti uso il servizio applicativo sosttostante, che recupererò sempre i valori dal database
         return courseService.GetCoursesAsync(model);
@@ -54,7 +54,7 @@ public class MemoryCacheCourseService : ICachedCourseService
             cacheEntry.SetSize(1);
             cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(coursesOptions.CurrentValue.CacheDuration));
             return courseService.getBestRatingCoursesAsync();
-        });
+        })!;
     }
 
     public Task<List<CourseViewModel>> getMostRecentCoursesAsync()
@@ -64,7 +64,7 @@ public class MemoryCacheCourseService : ICachedCourseService
             cacheEntry.SetSize(1);
             cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(coursesOptions.CurrentValue.CacheDuration));
             return courseService.getMostRecentCoursesAsync();
-        });
+        })!;
     }
 
     public Task<CourseDetailViewModel> CreateCourseAsync(CourseCreateInputModel inputModel)
@@ -106,7 +106,7 @@ public class MemoryCacheCourseService : ICachedCourseService
             cacheEntry.SetSize(1);
             cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(coursesOptions.CurrentValue.CacheDuration));
             return courseService.GetCourseAuthorIdAsync(courseId);
-        });
+        })!;
     }
 
     public Task<int> GetCourseCountByAuthorIdAsync(string userId)

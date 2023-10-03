@@ -12,8 +12,8 @@ public class CourseDetailViewModel : CourseViewModel
         Lessons = new List<LessonViewModel>();
     }
 
-    public string Description { get; set; }
-    public List<LessonViewModel> Lessons { get; set; }
+    public string Description { get; set; } = "";
+    public List<LessonViewModel> Lessons { get; set; } = new List<LessonViewModel>();
 
     public TimeSpan TotalCourseDuration
     {
@@ -25,17 +25,17 @@ public class CourseDetailViewModel : CourseViewModel
         return new CourseDetailViewModel
         {
             Id = Convert.ToInt32(courseRow["Id"]),
-            Description = Convert.ToString(courseRow["Description"]),
-            Title = Convert.ToString(courseRow["Title"]),
-            ImagePath = Convert.ToString(courseRow["ImagePath"]),
-            Author = Convert.ToString(courseRow["Author"]),
+            Description = Convert.ToString(courseRow["Description"])!,
+            Title = Convert.ToString(courseRow["Title"])!,
+            ImagePath = Convert.ToString(courseRow["ImagePath"])!,
+            Author = Convert.ToString(courseRow["Author"])!,
             Rating = Convert.ToDouble(courseRow["Rating"]),
             FullPrice = new Money(
-                Enum.Parse<Currency>(Convert.ToString(courseRow["FullPrice_Currency"])),
+                Enum.Parse<Currency>(Convert.ToString(courseRow["FullPrice_Currency"])!),
                 Convert.ToDecimal(courseRow["FullPrice_Amount"])
             ),
             CurrentPrice = new Money(
-                Enum.Parse<Currency>(Convert.ToString(courseRow["CurrentPrice_Currency"])),
+                Enum.Parse<Currency>(Convert.ToString(courseRow["CurrentPrice_Currency"])!),
                 Convert.ToDecimal(courseRow["CurrentPrice_Amount"])
             ),
             Lessons = new List<LessonViewModel>()
@@ -47,13 +47,13 @@ public class CourseDetailViewModel : CourseViewModel
         return new CourseDetailViewModel
         {
             Id = course.Id,
-            Description = course.Description,
+            Description = course.Description!,
             Title = course.Title,
             ImagePath = course.ImagePath,
             Author = course.Author,
             Rating = course.Rating,
-            FullPrice = course.FullPrice,
-            CurrentPrice = course.CurrentPrice,
+            FullPrice = course.FullPrice!,
+            CurrentPrice = course.CurrentPrice!,
             Lessons = new List<LessonViewModel>()
         };
     }

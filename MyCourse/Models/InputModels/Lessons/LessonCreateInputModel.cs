@@ -9,5 +9,5 @@ public class LessonCreateInputModel
     MinLength(10, ErrorMessage = "Il titolo dev'essere di almeno {1} caratteri"),
     MaxLength(100, ErrorMessage = "Il titolo dev'essere di al massimo {1} caratteri"),
     RegularExpression(@"^[0-9A-z\u00C0-\u00ff\s\.']+$", ErrorMessage = "Titolo non valido")]
-    public string Title { get; set; }
+    public string Title { get; set; } = "";
 }

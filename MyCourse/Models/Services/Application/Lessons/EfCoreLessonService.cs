@@ -18,12 +18,12 @@ public class EfCoreLessonService : ILessonService
 
     public async Task<LessonDetailViewModel> GetLessonAsync(int id)
     {
-        IQueryable<LessonDetailViewModel> queryLinq = dbContext.Lessons
+        IQueryable<LessonDetailViewModel> queryLinq = dbContext.Lessons!
             .AsNoTracking()
             .Where(lesson => lesson.Id == id)
             .Select(lesson => LessonDetailViewModel.FromEntity(lesson));
 
-        LessonDetailViewModel viewModel = await queryLinq.FirstOrDefaultAsync();
+        LessonDetailViewModel? viewModel = await queryLinq.FirstOrDefaultAsync();
 
         if (viewModel == null)
         {
@@ -37,7 +37,7 @@ public class EfCoreLessonService : ILessonService
     public async Task<LessonDetailViewModel> CreateLessonAsync(LessonCreateInputModel inputModel)
     {
         var entity = new Lesson(inputModel.Title, inputModel.CourseId);
-        dbContext.Lessons.Add(entity);
+        dbContext.Lessons!.Add(entity);
         await dbContext.SaveChangesAsync();
 
         return LessonDetailViewModel.FromEntity(entity);
@@ -45,11 +45,11 @@ public class EfCoreLessonService : ILessonService
 
     public async Task<LessonEditInputModel> GetLessonForEditingAsync(int id)
     {
-        IQueryable<LessonEditInputModel> queryLinq = dbContext.Lessons
+        IQueryable<LessonEditInputModel> queryLinq = dbContext.Lessons!
             .AsNoTracking()
             .Where(lesson => lesson.Id == id)
             .Select(lesson => LessonEditInputModel.FromEntity(lesson));
-        LessonEditInputModel viewModel = await queryLinq.FirstOrDefaultAsync();
+        LessonEditInputModel? viewModel = await queryLinq.FirstOrDefaultAsync();
 
         if (viewModel == null)
         {
@@ -62,12 +62,7 @@ public class EfCoreLessonService : ILessonService
 
     public async Task<LessonDetailViewModel> EditLessonAsync(LessonEditInputModel inputModel)
     {
-        Lesson lesson = await dbContext.Lessons.FindAsync(inputModel.Id);
-        if (lesson == null)
-        {
-            throw new LessonNotFoundException(inputModel.Id);
-        }
-
+        Lesson lesson = await dbContext.Lessons!.FindAsync(inputModel.Id) ?? throw new LessonNotFoundException(inputModel.Id);
         lesson.ChangeTitle(inputModel.Title);
         lesson.changeDescription(inputModel.Description);
         lesson.changeDuration(inputModel.Duration);
@@ -88,11 +83,7 @@ public class EfCoreLessonService : ILessonService
 
     public async Task DeleteLessonAsync(LessonDeleteInputModel inputModel)
     {
-        Lesson lesson = await dbContext.Lessons.FindAsync(inputModel.Id);
-        if (lesson == null)
-        {
-            throw new LessonNotFoundException(inputModel.Id);
-        }
+        Lesson lesson = await dbContext.Lessons!.FindAsync(inputModel.Id) ?? throw new LessonNotFoundException(inputModel.Id);
         dbContext.Remove(lesson);
         await dbContext.SaveChangesAsync();
     }

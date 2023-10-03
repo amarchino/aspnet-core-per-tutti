@@ -16,26 +16,26 @@ public class CourseEditInputModel : IValidatableObject
     RegularExpression(@"^[\w\s\.]+$", ErrorMessage = "Titolo non valido"),
     Remote(action: nameof(CoursesController.IsTitleAvailable), controller: "Courses", ErrorMessage = "Il titolo esiste già", AdditionalFields = "Id"),
     Display(Name = "Titolo")]
-    public string Title { get; set; }
+    public string Title { get; set; } = "";
     [MinLength(10, ErrorMessage = "La descrizione dev'essere di almeno {1} caratteri"),
     MaxLength(1000, ErrorMessage = "La descrizione dev'essere di massimo {1} caratteri"),
     Display(Name = "Descrizione")]
-    public string Description { get; set; }
+    public string? Description { get; set; }
     [Display(Name = "Immagine rappresentativa")]
     public string? ImagePath { get; set; }
     [Required(ErrorMessage = "L'email di contatto è obbligatoria"),
     EmailAddress(ErrorMessage = "Devi inserire un indirizzo email"),
     Display(Name = "Email di contatto")]
-    public string Email { get; set; }
+    public string Email { get; set; } = "";
     [Required(ErrorMessage = "Il prezzo intero è obbligatorio"),
     Display(Name = "Prezzo intero")]
-    public Money FullPrice { get; set; }
+    public Money FullPrice { get; set; } = new ();
     [Required(ErrorMessage = "Il prezzo corrent è obbligatorio"),
     Display(Name = "Prezzo corrente")]
-    public Money CurrentPrice { get; set; }
+    public Money CurrentPrice { get; set; } = new ();
     [Display(Name = "Nuova immagine...")]
-    public IFormFile Image { get; set; }
-    public string RowVersion { get; set; }
+    public IFormFile? Image { get; set; }
+    public string? RowVersion { get; set; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
