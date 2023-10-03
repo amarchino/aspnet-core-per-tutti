@@ -19,12 +19,11 @@
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.ReCaptcha" Version="1.7.0" />
-    <PackageReference Include="HtmlSanitizer" Version="8.0.718" /> <!-- 6.0.453 --><!-- 8.0.718 -->
+    <PackageReference Include="HtmlSanitizer" Version="8.0.718" />
     <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="13.3.0" />
     <PackageReference Include="MailKit" Version="4.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.22" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.22" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.22" Condition="'$(Configuration)' == 'Debug'" />
     <PackageReference Include="Microsoft.Data.SQLite" Version="7.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.11">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
